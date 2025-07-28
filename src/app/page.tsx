@@ -1,6 +1,8 @@
 // app/page.tsx
 import HeaderCard from "@/components/home/HeaderCard";
 import FeatureCard from "@/components/home/FeatureCard";
+import DailyAyat from "@/components/home/DailyAyat";
+import DailyDoa from "@/components/home/DailyDoa";
 import {
   BookOpen,
   Clock,
@@ -73,6 +75,11 @@ export default function Home() {
               color={feature.color}
             />
           ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DailyAyat />
+          <DailyDoa />
         </div>
       </div>
     </div>
