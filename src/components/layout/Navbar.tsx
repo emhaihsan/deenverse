@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, HandHelping, Menu, X, Home, Sparkles } from "lucide-react";
+import { WalletConnectButton } from "@/components/web3/WalletConnectButton";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -78,6 +79,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <WalletConnectButton />
           </div>
 
           {/* Mobile menu button */}
