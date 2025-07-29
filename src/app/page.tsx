@@ -23,19 +23,20 @@ export default function Home() {
       color: "border-emerald-500",
     },
     {
-      title: "Edukasi Sholat",
-      description: "Panduan lengkap tata cara sholat fardhu dan sunnah.",
-      icon: <Clock className="w-6 h-6" />,
-      href: "/sholat",
-      color: "border-blue-500",
-    },
-    {
       title: "Kumpulan Doa",
       description: "Koleksi doa sehari-hari sesuai sunnah Rasulullah.",
       icon: <HandHelping className="w-6 h-6" />,
       href: "/doa",
       color: "border-indigo-500",
     },
+    {
+      title: "Edukasi Sholat",
+      description: "Panduan lengkap tata cara sholat fardhu dan sunnah.",
+      icon: <Clock className="w-6 h-6" />,
+      href: "/sholat",
+      color: "border-blue-500",
+    },
+
     {
       title: "Edukasi Zakat",
       description: "Hitung dan ketahui kewajiban zakat Anda dengan mudah.",

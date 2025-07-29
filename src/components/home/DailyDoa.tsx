@@ -55,7 +55,9 @@ export default function DailyDoa() {
           <div className="p-2 bg-indigo-100 rounded-lg">
             <HandHelping className="w-5 h-5 text-indigo-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Doa Hari Ini</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            One Day One Doa
+          </h2>
         </div>
         <p className="text-gray-500">Tidak dapat memuat doa hari ini.</p>
       </div>
@@ -69,7 +71,9 @@ export default function DailyDoa() {
           <div className="p-2 bg-indigo-100 rounded-lg">
             <HandHelping className="w-5 h-5 text-indigo-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Doa Hari Ini</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            One Day One Doa
+          </h2>
         </div>
         <button
           onClick={fetchRandomDoa}

@@ -50,7 +50,9 @@ export default function DailyAyat() {
           <div className="p-2 bg-emerald-100 rounded-lg">
             <BookOpen className="w-5 h-5 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Ayat Hari Ini</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            One Day One Ayat
+          </h2>
         </div>
         <p className="text-gray-500">Tidak dapat memuat ayat hari ini.</p>
       </div>
@@ -64,7 +66,9 @@ export default function DailyAyat() {
           <div className="p-2 bg-emerald-100 rounded-lg">
             <BookOpen className="w-5 h-5 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Ayat Hari Ini</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            One Day One Ayat
+          </h2>
         </div>
       </div>
 
