@@ -11,6 +11,7 @@ import {
   Umbrella,
   HandHelping,
 } from "lucide-react";
+
 export default function Home() {
   // Update the features array in app/page.tsx
   const features = [
@@ -61,10 +62,17 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <HeaderCard />
 
+        {/* Daily Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DailyAyat />
+          <DailyDoa />
+        </div>
+
+        {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <FeatureCard
@@ -76,11 +84,6 @@ export default function Home() {
               color={feature.color}
             />
           ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DailyAyat />
-          <DailyDoa />
         </div>
       </div>
     </div>

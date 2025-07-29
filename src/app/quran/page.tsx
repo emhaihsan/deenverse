@@ -141,7 +141,7 @@ export default function QuranPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
@@ -152,7 +152,7 @@ export default function QuranPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
