@@ -3,6 +3,7 @@ import HeaderCard from "@/components/home/HeaderCard";
 import FeatureCard from "@/components/home/FeatureCard";
 import DailyAyat from "@/components/home/DailyAyat";
 import DailyDoa from "@/components/home/DailyDoa";
+import Link from "next/link";
 import {
   BookOpen,
   Clock,
@@ -10,6 +11,7 @@ import {
   Moon,
   Umbrella,
   HandHelping,
+  HeartHandshake,
 } from "lucide-react";
 
 export default function Home() {
@@ -79,6 +81,27 @@ export default function Home() {
               color={feature.color}
             />
           ))}
+        </div>
+        {/* Penyaluran CTA Card */}
+        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-xl font-bold mb-2">
+                Penyaluran Zakat, Infak & Sedekah On-Chain
+              </h2>
+              <p className="text-emerald-100">
+                Salurkan harta Anda secara transparan dan aman menggunakan
+                teknologi blockchain
+              </p>
+            </div>
+            <Link
+              href="/penyaluran"
+              className="inline-flex items-center px-6 py-3 bg-white text-emerald-600 font-medium rounded-xl hover:bg-gray-100 transition-colors shadow-md whitespace-nowrap"
+            >
+              <HeartHandshake className="w-5 h-5 mr-2" />
+              Salurkan Sekarang
+            </Link>
+          </div>
         </div>
         {/* Daily Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

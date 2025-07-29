@@ -8,6 +8,7 @@ import {
   Heart,
   HandCoins,
   Scale,
+  HeartHandshake,
 } from "lucide-react";
 
 export default function ZakatPage() {
@@ -150,22 +151,22 @@ export default function ZakatPage() {
           </div>
         </div>
 
-        {/* Calculator CTA */}
+        {/* Penyaluran CTA */}
         <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-8 text-center text-white">
-          <Calculator className="w-12 h-12 mx-auto mb-4" />
+          <HeartHandshake className="w-12 h-12 mx-auto mb-4" />
           <h2 className="text-2xl font-medium mb-2">
-            Hitung Kewajiban Zakat Anda
+            Salurkan Zakat, Infaq & Sedekah Anda
           </h2>
           <p className="mb-6 max-w-2xl mx-auto opacity-90">
-            Gunakan kalkulator kami untuk menghitung zakat yang tepat sesuai
-            dengan harta dan pendapatan Anda
+            Gunakan platform on-chain kami untuk menyalurkan harta Anda secara
+            transparan dan aman
           </p>
           <Link
-            href="/zakat/calculator"
+            href="/penyaluran/zakat"
             className="inline-flex items-center gap-2 bg-white text-emerald-600 px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition-colors"
           >
-            Buka Kalkulator Zakat
-            <Calculator className="w-4 h-4" />
+            Salurkan Zakat Sekarang
+            <HeartHandshake className="w-4 h-4" />
           </Link>
         </div>
       </div>
