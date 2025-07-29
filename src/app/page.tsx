@@ -24,18 +24,11 @@ export default function Home() {
       color: "border-emerald-500",
     },
     {
-      title: "Kumpulan Doa",
+      title: "Doa",
       description: "Koleksi doa sehari-hari sesuai sunnah Rasulullah.",
       icon: <HandHelping className="w-6 h-6" />,
       href: "/doa",
       color: "border-indigo-500",
-    },
-    {
-      title: "Edukasi Sholat",
-      description: "Panduan lengkap tata cara sholat fardhu dan sunnah.",
-      icon: <Clock className="w-6 h-6" />,
-      href: "/sholat",
-      color: "border-blue-500",
     },
 
     {
@@ -45,6 +38,14 @@ export default function Home() {
       href: "/zakat",
       color: "border-amber-500",
     },
+    {
+      title: "Edukasi Sholat",
+      description: "Panduan lengkap tata cara sholat fardhu dan sunnah.",
+      icon: <Clock className="w-6 h-6" />,
+      href: "/sholat",
+      color: "border-blue-500",
+    },
+
     {
       title: "Edukasi Puasa",
       description: "Panduan puasa wajib dan sunnah beserta keutamaannya.",
@@ -66,12 +67,6 @@ export default function Home() {
       <div className="max-w-4xl mx-auto space-y-8">
         <HeaderCard />
 
-        {/* Daily Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DailyAyat />
-          <DailyDoa />
-        </div>
-
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
@@ -84,6 +79,11 @@ export default function Home() {
               color={feature.color}
             />
           ))}
+        </div>
+        {/* Daily Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DailyAyat />
+          <DailyDoa />
         </div>
       </div>
     </div>
