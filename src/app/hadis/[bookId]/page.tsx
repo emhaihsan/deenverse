@@ -1,9 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { getHadisByRange, getHadisBooks } from "@/lib/api/hadis";
 import { HadisContent, HadisBook } from "@/types/hadis";
 
@@ -11,6 +18,7 @@ const HADIS_PER_PAGE = 10;
 
 export default function HadisBookPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const bookId = params.bookId as string;
 
   const [hadisList, setHadisList] = useState<HadisContent[]>([]);
@@ -19,6 +27,7 @@ export default function HadisBookPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [jumpToPage, setJumpToPage] = useState("");
 
   useEffect(() => {
     async function fetchBookInfo() {
@@ -38,6 +47,18 @@ export default function HadisBookPage() {
 
     fetchBookInfo();
   }, [bookId]);
+
+  useEffect(() => {
+    // Handle URL parameters
+    const pageParam = searchParams.get("page");
+
+    if (pageParam) {
+      const page = parseInt(pageParam);
+      if (!isNaN(page) && page > 0) {
+        setCurrentPage(page);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     async function fetchHadis() {
@@ -67,8 +88,48 @@ export default function HadisBookPage() {
   }, [bookId, currentPage, bookInfo]);
 
   const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleJumpToPage = (e: React.FormEvent) => {
+    e.preventDefault();
+    const page = parseInt(jumpToPage);
+    if (!isNaN(page) && page >= 1 && page <= totalPages) {
+      handlePageChange(page);
+      setJumpToPage("");
+    }
+  };
+
+  const getPageNumbers = () => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, "...");
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push("...", totalPages);
+    } else {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
   };
 
   if (loading && !bookInfo) {
@@ -129,103 +190,198 @@ export default function HadisBookPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Pagination Info */}
-        <div className="mb-8 text-center">
-          <p className="text-gray-600">
-            Halaman {currentPage} dari {totalPages} • Menampilkan hadis{" "}
-            {(currentPage - 1) * HADIS_PER_PAGE + 1} -{" "}
-            {Math.min(currentPage * HADIS_PER_PAGE, bookInfo?.available || 0)}
-          </p>
+        {/* Pagination Info and Controls */}
+        <div className="mb-8 space-y-4">
+          <div className="text-center">
+            <p className="text-gray-600">
+              Halaman {currentPage} dari {totalPages} • Menampilkan hadis{" "}
+              {(currentPage - 1) * HADIS_PER_PAGE + 1} -{" "}
+              {Math.min(currentPage * HADIS_PER_PAGE, bookInfo?.available || 0)}
+            </p>
+          </div>
+
+          {/* Jump to Page Form */}
+          <div className="flex justify-center">
+            <form
+              onSubmit={handleJumpToPage}
+              className="flex items-center gap-2"
+            >
+              <label htmlFor="jump-page" className="text-sm text-gray-600">
+                Lompat ke halaman:
+              </label>
+              <input
+                type="number"
+                id="jump-page"
+                value={jumpToPage}
+                onChange={(e) => setJumpToPage(e.target.value)}
+                placeholder={`1-${totalPages}`}
+                min="1"
+                max={totalPages}
+                className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              />
+              <button
+                type="submit"
+                className="px-3 py-1 text-sm bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+              >
+                Go
+              </button>
+            </form>
+          </div>
         </div>
 
-        {/* Hadis List */}
+        {/* Hadis List - Arabic Only */}
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
             <p className="mt-4 text-gray-600">Memuat hadis...</p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {hadisList.map((hadis) => (
-              <div
+              <Link
                 key={hadis.number}
-                className="bg-white rounded-xl shadow-md p-8"
+                href={`/hadis/${bookId}/${hadis.number}`}
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-orange-100 rounded-full">
-                    <BookOpen className="w-5 h-5 text-orange-600" />
+                <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-orange-100 rounded-full">
+                      <BookOpen className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">
+                      Hadis No. {hadis.number}
+                    </h3>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Hadis No. {hadis.number}
-                  </h3>
-                </div>
 
-                {/* Arabic Text */}
-                <div className="mb-6 p-6 bg-gray-50 rounded-lg">
-                  <p className="text-right text-xl leading-relaxed text-gray-800 font-arabic">
-                    {hadis.arab}
-                  </p>
-                </div>
+                  {/* Arabic Text Only */}
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-right text-xl leading-relaxed text-gray-800 font-arabic line-clamp-3">
+                      {hadis.arab}
+                    </p>
+                  </div>
 
-                {/* Indonesian Translation */}
-                <div className="prose max-w-none">
-                  <p className="text-gray-700 leading-relaxed">{hadis.id}</p>
+                  {/* Read More Indicator */}
+                  <div className="mt-4 text-center">
+                    <span className="text-sm text-orange-600 group-hover:text-orange-700 font-medium">
+                      Klik untuk membaca terjemahan →
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="mt-12 flex items-center justify-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Sebelumnya
-            </button>
+          <div className="mt-12 space-y-4">
+            {/* Main Pagination Controls */}
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              {/* First Page */}
+              <button
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Halaman Pertama"
+              >
+                <ChevronsLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">First</span>
+              </button>
 
-            <div className="flex items-center gap-2">
-              {/* Show page numbers */}
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
+              {/* Previous Page */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Sebelumnya</span>
+              </button>
 
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
-                      currentPage === pageNum
-                        ? "bg-orange-500 text-white"
-                        : "bg-white border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1">
+                {getPageNumbers().map((pageNum, index) =>
+                  pageNum === "..." ? (
+                    <span
+                      key={`dots-${index}`}
+                      className="px-2 py-2 text-gray-500"
+                    >
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum as number)}
+                      className={`px-3 py-2 rounded-lg transition-colors ${
+                        currentPage === pageNum
+                          ? "bg-orange-500 text-white"
+                          : "bg-white border border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                )}
+              </div>
+
+              {/* Next Page */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span className="hidden sm:inline">Selanjutnya</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Last Page */}
+              <button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Halaman Terakhir"
+              >
+                <span className="hidden sm:inline">Last</span>
+                <ChevronsRight className="w-4 h-4" />
+              </button>
             </div>
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Selanjutnya
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            {/* Quick Jump Options */}
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <span className="text-gray-500">Lompat cepat:</span>
+              <button
+                onClick={() => handlePageChange(Math.max(1, currentPage - 10))}
+                disabled={currentPage <= 10}
+                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                -10
+              </button>
+              <button
+                onClick={() => handlePageChange(Math.max(1, currentPage - 100))}
+                disabled={currentPage <= 100}
+                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                -100
+              </button>
+              <span className="text-gray-400">|</span>
+              <button
+                onClick={() =>
+                  handlePageChange(Math.min(totalPages, currentPage + 100))
+                }
+                disabled={currentPage >= totalPages - 100}
+                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                +100
+              </button>
+              <button
+                onClick={() =>
+                  handlePageChange(Math.min(totalPages, currentPage + 10))
+                }
+                disabled={currentPage >= totalPages - 10}
+                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                +10
+              </button>
+            </div>
           </div>
         )}
       </main>
