@@ -4,7 +4,7 @@ import React from "react";
 import { Config, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { XellarKitProvider, defaultConfig, darkTheme } from "@xellar/kit";
-import { sepolia, liskSepolia, baseSepolia } from "viem/chains";
+import { liskSepolia } from "viem/chains";
 
 const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "";
@@ -16,7 +16,7 @@ const config = defaultConfig({
   xellarAppId,
   xellarEnv: "sandbox",
   ssr: true, // Required for Next.js App Router
-  chains: [sepolia, liskSepolia, baseSepolia],
+  chains: [liskSepolia],
 }) as Config;
 
 const queryClient = new QueryClient();

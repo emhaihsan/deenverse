@@ -65,7 +65,7 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50 py-8 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         <HeaderCard />
 
         {/* Feature Cards */}

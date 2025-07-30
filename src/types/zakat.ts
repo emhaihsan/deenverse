@@ -37,12 +37,6 @@ export interface ZakatType {
   sources: string[];
 }
 
-export interface ZakatCategory {
-  id: string;
-  name: string;
-  description: string;
-  zakatTypes: string[]; // Array of zakat type IDs
-}
 
 export interface ZakatCalculation {
   type: string;
