@@ -12,6 +12,7 @@ import {
   Umbrella,
   HandHelping,
   HeartHandshake,
+  Scroll,
 } from "lucide-react";
 
 export default function Home() {
@@ -24,6 +25,13 @@ export default function Home() {
       icon: <BookOpen className="w-6 h-6" />,
       href: "/quran",
       color: "border-emerald-500",
+    },
+    {
+      title: "Hadis",
+      description: "Koleksi hadis shahih dari berbagai kitab hadis terpercaya.",
+      icon: <Scroll className="w-6 h-6" />,
+      href: "/hadis",
+      color: "border-orange-500",
     },
     {
       title: "Doa",
