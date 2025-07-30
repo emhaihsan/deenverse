@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -10,8 +10,11 @@ import {
   Wallet,
   Info,
   DollarSign,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useAccount } from "wagmi";
+import { getCurrentGoldPrice, getNisabAmount } from "@/lib/api/goldPrice";
 
 const zakatTypesEmas = [
   {
@@ -47,6 +50,11 @@ const zakatTypesEmas = [
 ];
 
 export default function NisabEmasPage() {
+  const [goldPrice, setGoldPrice] = useState<number | null>(null);
+  const [nishab, setNishab] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"simple" | "advanced">("simple");
   const [simpleAmount, setSimpleAmount] = useState("");
   const [advancedInputs, setAdvancedInputs] = useState({
@@ -61,13 +69,37 @@ export default function NisabEmasPage() {
 
   const { isConnected } = useAccount();
 
-  const nisabEmas = 115000000; // Rp 115 juta (85 gram emas)
-  const kadarZakat = 0.025; // 2.5%
+  const fetchGoldData = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const [price, nisab] = await Promise.all([
+        getCurrentGoldPrice(),
+        getNisabAmount(),
+      ]);
+
+      setGoldPrice(price);
+      setNishab(nisab);
+      setLastUpdated(new Date().toLocaleTimeString("id-ID"));
+    } catch (err) {
+      console.error("Error:", err);
+      setError(
+        "Gagal memperbarui data harga emas. Menggunakan data terakhir yang tersimpan."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGoldData();
+  }, []);
 
   const calculateSimpleZakat = () => {
     const amount = parseFloat(simpleAmount) || 0;
-    if (amount >= nisabEmas) {
-      return amount * kadarZakat;
+    if (amount >= nishab) {
+      return amount * 0.025;
     }
     return 0;
   };
@@ -124,8 +156,8 @@ export default function NisabEmasPage() {
       }
     });
 
-    if (totalHarta >= nisabEmas) {
-      return totalHarta * kadarZakat;
+    if (totalHarta >= nishab) {
+      return totalHarta * 0.025;
     }
     return 0;
   };
@@ -196,7 +228,7 @@ export default function NisabEmasPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div className="p-3 bg-yellow-50 rounded-lg">
                   <span className="font-medium text-yellow-800">Nisab:</span>
-                  <p className="text-yellow-700">{formatCurrency(nisabEmas)}</p>
+                  <p className="text-yellow-700">{formatCurrency(nishab)}</p>
                 </div>
                 <div className="p-3 bg-yellow-50 rounded-lg">
                   <span className="font-medium text-yellow-800">Kadar:</span>
@@ -209,6 +241,64 @@ export default function NisabEmasPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Gold Price */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Coins className="w-5 h-5 mr-2 text-amber-500" />
+                Harga Emas Terkini
+              </h2>
+              <p className="text-sm text-gray-600">
+                Harga jual emas per gram (ANTAM)
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                {lastUpdated && `Terakhir diperbarui: ${lastUpdated}`}
+              </p>
+            </div>
+
+            <div className="text-right">
+              {isLoading ? (
+                <div className="animate-pulse flex items-center justify-end">
+                  <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                  <span>Memuat...</span>
+                </div>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold text-emerald-700">
+                    Rp {goldPrice?.toLocaleString("id-ID") || "..."}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Nishab: Rp {nishab.toLocaleString("id-ID")} (85 gram)
+                  </p>
+                </>
+              )}
+
+              <button
+                onClick={fetchGoldData}
+                disabled={isLoading}
+                className={`mt-2 text-sm flex items-center ml-auto ${
+                  isLoading
+                    ? "text-gray-400"
+                    : "text-emerald-600 hover:text-emerald-800"
+                }`}
+              >
+                <RefreshCw
+                  className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                />
+                Perbarui Harga
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="mt-4 p-3 bg-yellow-50 text-yellow-700 rounded-md text-sm flex items-start">
+              <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
         </div>
 
         {/* Tab Navigation */}
