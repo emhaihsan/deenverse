@@ -172,14 +172,15 @@ export default function HeaderCard() {
 
   if (!location) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-6 animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
-        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="bg-[#03533d] rounded-xl overflow-hidden border-b-6 border-gray-900-900 p-6 animate-pulse">
+        <div className="h-6 bg-white/10 rounded-lg w-1/2 mb-4"></div>
+        <div className="h-4 bg-white/10 rounded-lg w-3/4"></div>
       </div>
     );
   }
+
   return (
-    <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl shadow-md p-6">
+    <div className="bg-[#03533d] text-white rounded-xl overflow-hidden border-b-6 border-gray-900 p-6 transition-all duration-300">
       <div className="flex flex-col space-y-4">
         {/* Top Bar - Date and Location */}
         <div className="flex justify-between items-start">
@@ -188,7 +189,7 @@ export default function HeaderCard() {
             <div className="text-3xl font-bold mb-1">
               {getHari(currentDate).toUpperCase()}
             </div>
-            <div className="text-lg">
+            <div className="text-emerald-100">
               {formatGregorian(currentDate)} / {formatHijri(currentDate)}
             </div>
           </div>
@@ -197,7 +198,7 @@ export default function HeaderCard() {
           <div className="text-right">
             <div className="flex items-center justify-end space-x-1 text-emerald-100">
               <MapPin className="w-4 h-4" />
-              <span className="text-sm font-medium">{locationName}</span>
+              <span className="text-sm">{locationName}</span>
             </div>
           </div>
         </div>
@@ -205,7 +206,7 @@ export default function HeaderCard() {
         {/* Next Prayer Section */}
         {nextPrayer && (
           <div
-            className={`bg-white/10 backdrop-blur-sm p-4 rounded-lg ${
+            className={`bg-white/10 p-4 rounded-lg ${
               isPrayerTime ? "animate-pulse" : ""
             }`}
           >
@@ -215,15 +216,15 @@ export default function HeaderCard() {
                   Sholat Berikutnya
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold">{nextPrayer.name}</span>
-                  <span className="text-xl">•</span>
-                  <span className="text-2xl font-mono">
+                  <span className="text-xl font-bold">{nextPrayer.name}</span>
+                  <span className="text-emerald-200">•</span>
+                  <span className="text-xl font-mono">
                     {format(nextPrayer.time, "HH:mm")}
                   </span>
                 </div>
               </div>
               <div
-                className={`text-xl font-mono ${
+                className={`text-sm font-medium ${
                   isPrayerTime
                     ? "text-yellow-300 font-bold"
                     : "text-emerald-100"

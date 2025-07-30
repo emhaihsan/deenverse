@@ -27,7 +27,7 @@ export default function DailyAyat() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+      <div className="bg-gray-50 rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 group animate-pulse">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-emerald-100 rounded-lg">
             <BookOpen className="w-5 h-5 text-emerald-600" />
@@ -45,7 +45,7 @@ export default function DailyAyat() {
 
   if (!dailyAyat) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-gray-50 rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 group">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-emerald-100 rounded-lg">
             <BookOpen className="w-5 h-5 text-emerald-600" />
@@ -60,7 +60,7 @@ export default function DailyAyat() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+    <div className="bg-gray-50 rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 group hover:shadow-lg transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-emerald-100 rounded-lg">

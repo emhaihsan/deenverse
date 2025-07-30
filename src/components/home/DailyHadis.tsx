@@ -30,10 +30,10 @@ export default function DailyHadis() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-orange-100 rounded-full">
-            <Scroll className="w-6 h-6 text-orange-600" />
+      <div className="bg-gray-50 rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 group animate-pulse">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-orange-100 rounded-lg">
+            <Scroll className="w-5 h-5 text-orange-600" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900">
             One Day One Hadis
@@ -49,10 +49,10 @@ export default function DailyHadis() {
 
   if (error || !hadis) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="bg-gray-50 rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 group">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-orange-100 rounded-full">
-            <Scroll className="w-6 h-6 text-orange-600" />
+          <div className="p-2 bg-orange-100 rounded-lg">
+            <Scroll className="w-5 h-5 text-orange-600" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900">
             One Day One Hadis
@@ -73,11 +73,11 @@ export default function DailyHadis() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <div className="bg-gray-50 rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 group hover:shadow-lg transition-shadow">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-orange-100 rounded-full">
-            <Scroll className="w-6 h-6 text-orange-600" />
+          <div className="p-2 bg-orange-100 rounded-lg">
+            <Scroll className="w-5 h-5 text-orange-600" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900">
             One Day One Hadis

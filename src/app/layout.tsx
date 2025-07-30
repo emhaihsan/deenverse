@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "DeenVerse - Muslim Superapp",
   description:
     "Platform digital untuk mempermudah ibadah dan memperdalam pemahaman agama Islam",
+  icons: {
+    icon: "/deenverse-logo.ico",
+  },
 };
 
 export default function RootLayout({
