@@ -23,6 +23,7 @@ export default function FeatureCard({
     "Edukasi Zakat",
     "Edukasi Sholat",
     "Edukasi Puasa",
+    "Edukasi Haji dan Umroh",
   ].includes(title);
 
   const cardContent = (

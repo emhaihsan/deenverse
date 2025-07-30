@@ -55,7 +55,7 @@ export default function Home() {
       color: "border-purple-500",
     },
     {
-      title: "Edukasi Haji",
+      title: "Edukasi Haji dan Umroh",
       description: "Panduan lengkap ibadah haji dan umroh.",
       icon: <Umbrella className="w-6 h-6" />,
       href: "/haji",
