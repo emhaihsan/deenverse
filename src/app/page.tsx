@@ -47,7 +47,6 @@ export default function Home() {
       href: "/sholat",
       color: "border-blue-500",
     },
-
     {
       title: "Edukasi Puasa",
       description: "Panduan puasa wajib dan sunnah beserta keutamaannya.",
