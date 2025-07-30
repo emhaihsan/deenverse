@@ -17,7 +17,12 @@ export default function FeatureCard({
   href,
   color,
 }: FeatureCardProps) {
-  const isAvailable = ["Al-Qur'an", "Doa", "Edukasi Zakat"].includes(title);
+  const isAvailable = [
+    "Al-Qur'an",
+    "Doa",
+    "Edukasi Zakat",
+    "Edukasi Sholat",
+  ].includes(title);
 
   const cardContent = (
     <div
