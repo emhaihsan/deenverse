@@ -8,17 +8,45 @@ import {
   Info,
   Calculator,
   Heart,
+  Loader2,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import {
+  convertIdrToEth,
+  formatEth,
+  getEthereumPrice,
+} from "@/lib/api/cryptoPrice";
+
+const organizations = [
+  {
+    id: "baznas",
+    name: "Baznas",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Logo_BAZNAS_RI-Hijau-01.png",
+  },
+  {
+    id: "lazisnu",
+    name: "LazisNU",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Logo_NU_CARE-LAZISNU.jpg/1280px-Logo_NU_CARE-LAZISNU.jpg",
+  },
+  {
+    id: "lazismu",
+    name: "LazisMU",
+    logo: "https://lazismuorg.sgp1.digitaloceanspaces.com/wp-content/uploads/2025/07/02095630/lazismu-square.png",
+  },
+];
 
 export default function FidyahPenyaluranPage() {
   const { isConnected } = useAccount();
   const [daysCount, setDaysCount] = useState<number>(0);
-  const [paymentType, setPaymentType] = useState<"rice" | "money">("rice");
   const [ricePrice, setRicePrice] = useState<number>(15000); // Default rice price per kg
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [totalCost, setTotalCost] = useState<number>(0);
+  const [selectedOrg, setSelectedOrg] = useState<string>("");
+  const [ethAmount, setEthAmount] = useState<string>("0");
+  const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
+  const [ethPrice, setEthPrice] = useState<number>(0);
 
   // Calculate fidyah amount
   useEffect(() => {
@@ -29,6 +57,42 @@ export default function FidyahPenyaluranPage() {
     setTotalAmount(totalRice);
     setTotalCost(cost);
   }, [daysCount, ricePrice]);
+
+  // Fetch ETH price on mount
+  useEffect(() => {
+    const fetchEthPrice = async () => {
+      try {
+        const price = await getEthereumPrice();
+        setEthPrice(price);
+      } catch (err) {
+        console.error("Error fetching ETH price:", err);
+      }
+    };
+
+    fetchEthPrice();
+  }, []);
+
+  // Convert IDR to ETH when totalCost changes
+  useEffect(() => {
+    const convertToEth = async () => {
+      if (totalCost > 0) {
+        setIsLoadingEth(true);
+        try {
+          const eth = await convertIdrToEth(totalCost);
+          setEthAmount(formatEth(eth));
+        } catch (err) {
+          console.error("Error converting to ETH:", err);
+        } finally {
+          setIsLoadingEth(false);
+        }
+      } else {
+        setEthAmount("0");
+      }
+    };
+
+    const timeoutId = setTimeout(convertToEth, 500);
+    return () => clearTimeout(timeoutId);
+  }, [totalCost]);
 
   const presetDays = [1, 7, 15, 30];
 
@@ -101,6 +165,39 @@ export default function FidyahPenyaluranPage() {
           </div>
         </div>
 
+        {/* Organization Selection */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Heart className="w-6 h-6 text-amber-600" />
+            <h2 className="text-xl font-medium text-gray-900">
+              Pilih Lembaga Penyalur
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {organizations.map((org) => (
+              <div
+                key={org.id}
+                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                  selectedOrg === org.id
+                    ? "border-amber-500 bg-amber-50"
+                    : "border-gray-200 hover:border-amber-300"
+                }`}
+                onClick={() => setSelectedOrg(org.id)}
+              >
+                <div className="relative h-16 mb-2">
+                  <Image
+                    src={org.logo}
+                    alt={org.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <p className="text-center font-medium mt-2">{org.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Fidyah Calculator */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
           <div className="flex items-center gap-3 mb-4">
@@ -114,12 +211,12 @@ export default function FidyahPenyaluranPage() {
           </p>
 
           <div className="space-y-6">
-            {/* Preset Days */}
+            {/* Days Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Pilih Cepat (Hari)
+                Jumlah Hari Puasa yang Terlewat
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {presetDays.map((days) => (
                   <button
                     key={days}
@@ -130,82 +227,39 @@ export default function FidyahPenyaluranPage() {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    {days} hari
+                    {days} Hari
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Manual Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Jumlah Hari Puasa yang Terlewat
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={daysCount || ""}
-                onChange={(e) => setDaysCount(parseInt(e.target.value) || 0)}
-                placeholder="Masukkan jumlah hari"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-              />
-            </div>
-
-            {/* Payment Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Jenis Pembayaran
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setPaymentType("rice")}
-                  className={`p-3 rounded-lg border-2 transition-colors ${
-                    paymentType === "rice"
-                      ? "border-amber-500 bg-amber-50 text-amber-700"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="text-center">
-                    <Wheat className="w-6 h-6 mx-auto mb-2 text-amber-600" />
-                    <div className="font-medium">Beras</div>
-                    <div className="text-sm text-gray-500">1 mud per hari</div>
-                  </div>
-                </button>
-                <button
-                  onClick={() => setPaymentType("money")}
-                  className={`p-3 rounded-lg border-2 transition-colors ${
-                    paymentType === "money"
-                      ? "border-amber-500 bg-amber-50 text-amber-700"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="text-center">
-                    <Wallet className="w-6 h-6 mx-auto mb-2 text-amber-600" />
-                    <div className="font-medium">Uang</div>
-                    <div className="text-sm text-gray-500">
-                      Setara harga beras
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Rice Price Input (only show if money is selected) */}
-            {paymentType === "money" && (
-              <div>
+              <div className="mt-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Harga Beras per Kg (IDR)
+                  Atau Masukkan Jumlah Hari
                 </label>
                 <input
                   type="number"
                   min="0"
-                  value={ricePrice || ""}
-                  onChange={(e) => setRicePrice(parseInt(e.target.value) || 0)}
-                  placeholder="Masukkan harga beras per kg"
+                  value={daysCount || ""}
+                  onChange={(e) => setDaysCount(parseInt(e.target.value) || 0)}
+                  placeholder="Masukkan jumlah hari"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>
-            )}
+            </div>
+
+            {/* Rice Price Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Harga Beras per Kg (IDR)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={ricePrice || ""}
+                onChange={(e) => setRicePrice(parseInt(e.target.value) || 0)}
+                placeholder="Masukkan harga beras per kg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              />
+            </div>
 
             {/* Calculation Result */}
             <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
@@ -222,13 +276,34 @@ export default function FidyahPenyaluranPage() {
                     {totalAmount.toFixed(2)} kg
                   </span>
                 </div>
-                {paymentType === "money" && (
+                <div className="flex justify-between items-center pt-2 border-t border-amber-200">
+                  <span className="text-gray-700 font-medium">
+                    Total Biaya:
+                  </span>
+                  <span className="text-lg font-semibold text-amber-600">
+                    {formatCurrency(totalCost)}
+                  </span>
+                </div>
+                {/* ETH Conversion */}
+                {totalCost > 0 && (
                   <div className="flex justify-between items-center pt-2 border-t border-amber-200">
-                    <span className="text-gray-700 font-medium">
-                      Total Biaya:
-                    </span>
-                    <span className="text-lg font-semibold text-amber-600">
-                      {formatCurrency(totalCost)}
+                    <span className="text-gray-700">Jumlah dalam ETH:</span>
+                    <div className="flex items-center">
+                      {isLoadingEth ? (
+                        <div className="h-4 w-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mr-2" />
+                      ) : (
+                        <span className="font-medium text-purple-600">
+                          {ethAmount} ETH
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {ethPrice > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Kurs:</span>
+                    <span className="font-medium text-amber-700">
+                      1 ETH = {formatCurrency(ethPrice)}
                     </span>
                   </div>
                 )}
@@ -250,31 +325,28 @@ export default function FidyahPenyaluranPage() {
           </p>
 
           {/* Summary */}
-          {daysCount > 0 && (
+          {daysCount > 0 && selectedOrg && (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <h3 className="font-medium text-gray-900 mb-2">
                 Ringkasan Pembayaran
               </h3>
               <div className="text-sm text-gray-600 space-y-1">
+                <div>
+                  Lembaga:{" "}
+                  {organizations.find((o) => o.id === selectedOrg)?.name}
+                </div>
                 <div>Jumlah hari: {daysCount} hari</div>
-                <div>
-                  Jenis pembayaran: {paymentType === "rice" ? "Beras" : "Uang"}
-                </div>
-                <div>
-                  Total:{" "}
-                  {paymentType === "rice"
-                    ? `${totalAmount.toFixed(2)} kg beras`
-                    : formatCurrency(totalCost)}
-                </div>
+                <div>Total: {formatCurrency(totalCost)}</div>
+                <div>ETH: {ethAmount} ETH</div>
               </div>
             </div>
           )}
 
           {/* Payment Button */}
           <button
-            disabled={!isConnected || daysCount === 0}
+            disabled={!isConnected || daysCount === 0 || !selectedOrg}
             className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${
-              isConnected && daysCount > 0
+              isConnected && daysCount > 0 && selectedOrg
                 ? "bg-amber-600 hover:bg-amber-700 text-white"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
@@ -284,7 +356,11 @@ export default function FidyahPenyaluranPage() {
               ? "Hubungkan Dompet untuk Membayar"
               : daysCount === 0
               ? "Masukkan Jumlah Hari untuk Membayar"
-              : "Bayar Fidyah Sekarang"}
+              : !selectedOrg
+              ? "Pilih Lembaga Penyalur"
+              : isLoadingEth
+              ? "Menghitung..."
+              : `Bayar ${ethAmount} ETH`}
           </button>
 
           {!isConnected && (
