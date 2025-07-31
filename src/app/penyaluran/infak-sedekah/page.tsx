@@ -10,9 +10,17 @@ import {
   Users,
   BookOpen,
   Heart,
+  RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 import { useAccount } from "wagmi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  convertIdrToEth,
+  formatEth,
+  getEthereumPrice,
+  getDisplayEthereumPrice,
+} from "@/lib/api/cryptoPrice";
 
 export default function InfakSedekahPenyaluranPage() {
   const { isConnected } = useAccount();
@@ -23,6 +31,12 @@ export default function InfakSedekahPenyaluranPage() {
   const [amount, setAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [ethAmount, setEthAmount] = useState<string>("0");
+  const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
+  const [ethPrice, setEthPrice] = useState<number>(0);
+  const [ethPriceWithSlippage, setEthPriceWithSlippage] = useState<number>(0);
+  const [lastUpdated, setLastUpdated] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   const presetAmounts = [50000, 100000, 250000, 500000, 1000000];
 
@@ -91,6 +105,49 @@ export default function InfakSedekahPenyaluranPage() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
+
+  useEffect(() => {
+    const fetchEthPrices = async () => {
+      try {
+        const [displayPrice, priceWithSlippage] = await Promise.all([
+          getDisplayEthereumPrice(),
+          getEthereumPrice(),
+        ]);
+
+        setEthPrice(displayPrice);
+        setEthPriceWithSlippage(priceWithSlippage);
+        setLastUpdated(new Date().toLocaleTimeString("id-ID"));
+      } catch (err) {
+        console.error("Error fetching ETH prices:", err);
+        setError("Gagal memperbarui harga ETH. Silakan coba lagi nanti.");
+      }
+    };
+
+    fetchEthPrices();
+  }, []);
+
+  useEffect(() => {
+    const updateEthAmount = async () => {
+      if (amount > 0) {
+        setIsLoadingEth(true);
+        try {
+          const eth = await convertIdrToEth(amount);
+          setEthAmount(formatEth(eth));
+        } catch (err) {
+          console.error("Error converting IDR to ETH:", err);
+          setError("Gagal mengkonversi ke ETH. Silakan coba lagi.");
+          setEthAmount("0");
+        } finally {
+          setIsLoadingEth(false);
+        }
+      } else {
+        setEthAmount("0");
+      }
+    };
+
+    const timeoutId = setTimeout(updateEthAmount, 500); // Debounce
+    return () => clearTimeout(timeoutId);
+  }, [amount]);
 
   const handleAmountSelect = (selectedAmount: number) => {
     setAmount(selectedAmount);
@@ -313,11 +370,46 @@ export default function InfakSedekahPenyaluranPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Jumlah:</span>
+                  <span>Jumlah (IDR):</span>
                   <span className="font-medium text-blue-600">
                     {formatCurrency(amount)}
                   </span>
                 </div>
+                <div className="pt-2 border-t border-gray-200 mt-2">
+                  <div className="flex justify-between items-center">
+                    <span>Konversi ke ETH:</span>
+                    <div className="text-right">
+                      {isLoadingEth ? (
+                        <RefreshCw className="w-4 h-4 animate-spin text-gray-500 inline" />
+                      ) : (
+                        <span className="font-medium text-purple-600">
+                          {ethAmount} ETH
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Harga ETH:</span>
+                      <span>{formatCurrency(ethPrice)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Dengan slippage 0.5%:</span>
+                      <span className="text-amber-600">
+                        {formatCurrency(ethPriceWithSlippage)}
+                      </span>
+                    </div>
+                    <div className="text-right text-xs text-gray-400">
+                      {lastUpdated && `Terakhir diperbarui: ${lastUpdated}`}
+                    </div>
+                  </div>
+                </div>
+                {error && (
+                  <div className="mt-2 p-2 bg-red-50 text-red-600 text-xs rounded-md flex items-start">
+                    <AlertCircle className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
                 {description && (
                   <div className="pt-2 border-t border-gray-200">
                     <span className="text-gray-500">Catatan:</span>
@@ -338,9 +430,9 @@ export default function InfakSedekahPenyaluranPage() {
 
           {/* Payment Button */}
           <button
-            disabled={!isConnected || amount === 0}
+            disabled={!isConnected || amount === 0 || isLoadingEth}
             className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${
-              isConnected && amount > 0
+              isConnected && amount > 0 && !isLoadingEth
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
@@ -350,7 +442,9 @@ export default function InfakSedekahPenyaluranPage() {
               ? "Hubungkan Dompet untuk Menyalurkan"
               : amount === 0
               ? "Masukkan Jumlah untuk Menyalurkan"
-              : "Salurkan Sekarang"}
+              : isLoadingEth
+              ? "Menghitung..."
+              : `Bayar ${ethAmount} ETH`}
           </button>
 
           {!isConnected && (
