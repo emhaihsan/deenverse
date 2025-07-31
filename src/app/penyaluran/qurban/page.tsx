@@ -12,9 +12,34 @@ import {
   Calculator,
   Heart,
   CheckCircle,
+  Loader2,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import {
+  convertIdrToEth,
+  formatEth,
+  getEthereumPrice,
+} from "@/lib/api/cryptoPrice";
+
+const organizations = [
+  {
+    id: "baznas",
+    name: "Baznas",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Logo_BAZNAS_RI-Hijau-01.png",
+  },
+  {
+    id: "lazisnu",
+    name: "LazisNU",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Logo_NU_CARE-LAZISNU.jpg/1280px-Logo_NU_CARE-LAZISNU.jpg",
+  },
+  {
+    id: "lazismu",
+    name: "LazisMU",
+    logo: "https://lazismuorg.sgp1.digitaloceanspaces.com/wp-content/uploads/2025/07/02095630/lazismu-square.png",
+  },
+];
 
 interface QurbanAnimal {
   id: string;
@@ -35,11 +60,14 @@ export default function QurbanPenyaluranPage() {
   );
   const [shareCount, setShareCount] = useState<number>(1);
   const [participantNames, setParticipantNames] = useState<string[]>([""]);
-  const [deliveryLocation, setDeliveryLocation] = useState<string>("");
+  const [selectedOrg, setSelectedOrg] = useState<string>("");
   const [totalCost, setTotalCost] = useState<number>(0);
   const [qurbanType, setQurbanType] = useState<"individual" | "group">(
     "individual"
   );
+  const [ethAmount, setEthAmount] = useState<string>("0");
+  const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
+  const [ethPrice, setEthPrice] = useState<number>(0);
 
   const qurbanAnimals: QurbanAnimal[] = [
     {
@@ -89,19 +117,6 @@ export default function QurbanPenyaluranPage() {
     },
   ];
 
-  const qurbanLocations = [
-    "Jakarta Pusat",
-    "Jakarta Selatan",
-    "Jakarta Utara",
-    "Jakarta Barat",
-    "Jakarta Timur",
-    "Bogor",
-    "Depok",
-    "Tangerang",
-    "Bekasi",
-    "Lainnya",
-  ];
-
   useEffect(() => {
     if (selectedAnimal) {
       const cost =
@@ -111,6 +126,42 @@ export default function QurbanPenyaluranPage() {
       setTotalCost(cost);
     }
   }, [selectedAnimal, shareCount, qurbanType]);
+
+  // Fetch ETH price on mount
+  useEffect(() => {
+    const fetchEthPrice = async () => {
+      try {
+        const price = await getEthereumPrice();
+        setEthPrice(price);
+      } catch (err) {
+        console.error("Error fetching ETH price:", err);
+      }
+    };
+
+    fetchEthPrice();
+  }, []);
+
+  // Convert IDR to ETH when totalCost changes
+  useEffect(() => {
+    const convertToEth = async () => {
+      if (totalCost > 0) {
+        setIsLoadingEth(true);
+        try {
+          const eth = await convertIdrToEth(totalCost);
+          setEthAmount(formatEth(eth));
+        } catch (err) {
+          console.error("Error converting to ETH:", err);
+        } finally {
+          setIsLoadingEth(false);
+        }
+      } else {
+        setEthAmount("0");
+      }
+    };
+
+    const timeoutId = setTimeout(convertToEth, 500);
+    return () => clearTimeout(timeoutId);
+  }, [totalCost]);
 
   const handleAnimalSelect = (animal: QurbanAnimal) => {
     setSelectedAnimal(animal);
@@ -174,7 +225,7 @@ export default function QurbanPenyaluranPage() {
             Penyaluran Qurban
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
-            Salurkan hewan qurban Anda secara transparan dan aman menggunakan
+            Salurkan qurban Anda secara transparan dan aman menggunakan
             teknologi blockchain
           </p>
         </div>
@@ -189,36 +240,57 @@ export default function QurbanPenyaluranPage() {
               </h2>
               <div className="text-gray-600 space-y-3 text-sm">
                 <p>
-                  <strong>Qurban</strong> adalah ibadah menyembelih hewan ternak
-                  pada hari raya Idul Adha sebagai bentuk ketaatan kepada Allah
-                  SWT, mengikuti sunnah Nabi Ibrahim AS.
+                  Qurban adalah ibadah yang dilakukan umat Islam dengan
+                  menyembelih hewan ternak pada hari raya Idul Adha sebagai
+                  bentuk kepatuhan kepada Allah SWT.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Syarat Hewan Qurban:
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Sehat dan tidak cacat</li>
-                      <li>Mencapai umur minimal</li>
-                      <li>Tidak buta, pincang, atau sakit</li>
-                      <li>Tidak kurus kering</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Waktu Penyembelihan:
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Setelah shalat Idul Adha</li>
-                      <li>Hari Tasyriq (10-13 Dzulhijjah)</li>
-                      <li>Waktu yang dianjurkan</li>
-                      <li>Dengan niat yang benar</li>
-                    </ul>
-                  </div>
-                </div>
+                <p>
+                  <strong>Syarat wajib qurban:</strong>
+                </p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Muslim, baligh, dan berakal</li>
+                  <li>Merdeka (bukan budak)</li>
+                  <li>Kekayaan melebihi nisab (setara 612,36 gram perak)</li>
+                </ul>
+                <p>
+                  <strong>Hewan yang dapat disembelih:</strong> Kambing/Domba,
+                  Sapi/Kerbau, dan Unta dengan syarat dan ketentuan tertentu.
+                </p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Organization Selection */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Heart className="w-6 h-6 text-rose-600" />
+            <h2 className="text-xl font-medium text-gray-900">
+              Pilih Lembaga Penyalur
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {organizations.map((org) => (
+              <div
+                key={org.id}
+                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                  selectedOrg === org.id
+                    ? "border-rose-500 bg-rose-50"
+                    : "border-gray-200 hover:border-rose-300"
+                }`}
+                onClick={() => setSelectedOrg(org.id)}
+              >
+                <div className="relative h-16 mb-2">
+                  <Image
+                    src={org.logo}
+                    alt={org.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <p className="text-center font-medium mt-2">{org.name}</p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -231,189 +303,170 @@ export default function QurbanPenyaluranPage() {
             </h2>
           </div>
           <p className="text-gray-600 mb-6">
-            Pilih jenis hewan qurban yang sesuai dengan kebutuhan Anda
+            Pilih jenis hewan qurban yang sesuai dengan kemampuan Anda
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {qurbanAnimals.map((animal) => (
-              <button
+              <div
                 key={animal.id}
-                onClick={() => handleAnimalSelect(animal)}
-                className={`p-4 rounded-xl border-2 transition-all text-left ${
+                className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                   selectedAnimal?.id === animal.id
-                    ? animal.color
-                    : "border-gray-200 hover:border-gray-300"
+                    ? "border-rose-500 bg-rose-50"
+                    : "border-gray-200 hover:border-rose-300"
                 }`}
+                onClick={() => handleAnimalSelect(animal)}
               >
-                <div className="text-center mb-3">
-                  <div className="text-4xl mb-2">{animal.icon}</div>
-                  <h3 className="font-semibold text-gray-900">{animal.name}</h3>
-                  <p className="text-lg font-bold text-rose-600 mt-1">
-                    {formatCurrency(animal.price)}
-                  </p>
+                <div className="text-3xl mb-3">{animal.icon}</div>
+                <h3 className="font-medium text-gray-900 mb-1">
+                  {animal.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  {animal.description}
+                </p>
+                <div className="text-lg font-semibold text-rose-600 mb-3">
+                  {formatCurrency(animal.price)}
                 </div>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <p>
-                    <strong>Umur minimal:</strong> {animal.minAge}
-                  </p>
-                  <p>
-                    <strong>Kapasitas:</strong> {animal.maxShares} orang
-                  </p>
-                  <div>
-                    <strong>Keunggulan:</strong>
-                    <ul className="list-disc list-inside mt-1 space-y-1">
-                      {animal.benefits.map((benefit, idx) => (
-                        <li key={idx}>{benefit}</li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className="text-xs text-gray-500 mb-3">
+                  Min. {animal.minAge}
                 </div>
-              </button>
+                <ul className="text-xs text-gray-600 space-y-1">
+                  {animal.benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-1">
+                      <span>•</span>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Qurban Configuration */}
+        {/* Animal Configuration */}
         {selectedAnimal && (
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Calculator className="w-6 h-6 text-rose-600" />
+              <Users className="w-6 h-6 text-rose-600" />
               <h2 className="text-xl font-medium text-gray-900">
                 Konfigurasi Qurban
               </h2>
             </div>
 
             <div className="space-y-6">
-              {/* Qurban Type Selection */}
-              {selectedAnimal.maxShares > 1 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Jenis Qurban
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => setQurbanType("individual")}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        qurbanType === "individual"
-                          ? "border-rose-500 bg-rose-50 text-rose-700"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="text-center">
-                        <Heart className="w-6 h-6 mx-auto mb-2 text-rose-600" />
-                        <div className="font-medium">Individual</div>
-                        <div className="text-sm text-gray-500">
-                          Satu hewan utuh
-                        </div>
+              {/* Qurban Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Jenis Qurban
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => {
+                      setQurbanType("individual");
+                      setShareCount(1);
+                      setParticipantNames([""]);
+                    }}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      qurbanType === "individual"
+                        ? "border-rose-500 bg-rose-50 text-rose-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-center">
+                      <Users className="w-6 h-6 mx-auto mb-2 text-rose-600" />
+                      <div className="font-medium">Individual</div>
+                      <div className="text-sm text-gray-500">
+                        1 orang 1 ekor hewan
                       </div>
-                    </button>
-                    <button
-                      onClick={() => setQurbanType("group")}
-                      className={`p-3 rounded-lg border-2 transition-colors ${
-                        qurbanType === "group"
-                          ? "border-rose-500 bg-rose-50 text-rose-700"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="text-center">
-                        <Users className="w-6 h-6 mx-auto mb-2 text-rose-600" />
-                        <div className="font-medium">Patungan</div>
-                        <div className="text-sm text-gray-500">
-                          Berbagi dengan orang lain
-                        </div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setQurbanType("group")}
+                    disabled={selectedAnimal.maxShares === 1}
+                    className={`p-3 rounded-lg border-2 transition-colors ${
+                      qurbanType === "group"
+                        ? "border-rose-500 bg-rose-50 text-rose-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    } ${selectedAnimal.maxShares === 1 ? "opacity-50" : ""}`}
+                  >
+                    <div className="text-center">
+                      <Users className="w-6 h-6 mx-auto mb-2 text-rose-600" />
+                      <div className="font-medium">Patungan</div>
+                      <div className="text-sm text-gray-500">
+                        Berbagi 1 ekor hewan
                       </div>
-                    </button>
-                  </div>
+                    </div>
+                  </button>
                 </div>
-              )}
+              </div>
 
-              {/* Share Count Selection */}
-              {qurbanType === "group" && selectedAnimal.maxShares > 1 && (
+              {/* Share Count (only for group qurban) */}
+              {qurbanType === "group" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Jumlah Peserta (maksimal {selectedAnimal.maxShares} orang)
+                    Jumlah Peserta (Maks. {selectedAnimal.maxShares} orang)
                   </label>
-                  <div className="flex items-center gap-2">
-                    {Array.from(
-                      { length: selectedAnimal.maxShares },
-                      (_, i) => i + 1
-                    ).map((count) => (
-                      <button
-                        key={count}
-                        onClick={() => handleShareCountChange(count)}
-                        className={`w-12 h-12 rounded-lg border-2 font-medium transition-colors ${
-                          shareCount === count
-                            ? "border-rose-500 bg-rose-50 text-rose-700"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        {count}
-                      </button>
-                    ))}
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleShareCountChange(shareCount - 1)}
+                      disabled={shareCount <= 1}
+                      className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center disabled:opacity-50"
+                    >
+                      -
+                    </button>
+                    <span className="text-lg font-medium w-8 text-center">
+                      {shareCount}
+                    </span>
+                    <button
+                      onClick={() => handleShareCountChange(shareCount + 1)}
+                      disabled={shareCount >= selectedAnimal.maxShares}
+                      className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center disabled:opacity-50"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
               )}
 
               {/* Participant Names */}
-              {qurbanType === "group" && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Nama Peserta
-                  </label>
-                  <div className="space-y-3">
-                    {participantNames.map((name, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        value={name}
-                        onChange={(e) =>
-                          handleParticipantNameChange(index, e.target.value)
-                        }
-                        placeholder={`Nama peserta ${index + 1}`}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Delivery Location */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Lokasi Penyaluran
+                  {qurbanType === "individual"
+                    ? "Nama Peserta"
+                    : `Nama Peserta (${shareCount} orang)`}
                 </label>
-                <select
-                  value={deliveryLocation}
-                  onChange={(e) => setDeliveryLocation(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                >
-                  <option value="">Pilih lokasi penyaluran</option>
-                  {qurbanLocations.map((location) => (
-                    <option key={location} value={location}>
-                      {location}
-                    </option>
-                  ))}
-                </select>
+                {participantNames.map((name, index) => (
+                  <div key={index} className="mb-3">
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) =>
+                        handleParticipantNameChange(index, e.target.value)
+                      }
+                      placeholder={`Nama peserta ${index + 1}`}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    />
+                  </div>
+                ))}
               </div>
 
-              {/* Cost Calculation */}
+              {/* Calculation Result */}
               <div className="bg-rose-50 rounded-lg p-4 border border-rose-200">
-                <h3 className="font-medium text-rose-900 mb-3">
-                  Ringkasan Biaya
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Hewan:</span>
-                    <span className="font-medium">{selectedAnimal.name}</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Hewan qurban:</span>
+                    <span className="font-medium text-rose-700">
+                      {selectedAnimal.name}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Jenis:</span>
-                    <span className="font-medium">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Jenis qurban:</span>
+                    <span className="font-medium text-rose-700">
                       {qurbanType === "individual" ? "Individual" : "Patungan"}
                     </span>
                   </div>
                   {qurbanType === "group" && (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-700">Jumlah peserta:</span>
                       <span className="font-medium">{shareCount} orang</span>
                     </div>
@@ -426,6 +479,29 @@ export default function QurbanPenyaluranPage() {
                       {formatCurrency(totalCost)}
                     </span>
                   </div>
+                  {/* ETH Conversion */}
+                  {totalCost > 0 && (
+                    <div className="flex justify-between items-center pt-2 border-t border-rose-200">
+                      <span className="text-gray-700">Jumlah dalam ETH:</span>
+                      <div className="flex items-center">
+                        {isLoadingEth ? (
+                          <div className="h-4 w-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin mr-2" />
+                        ) : (
+                          <span className="font-medium text-purple-600">
+                            {ethAmount} ETH
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {ethPrice > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">Kurs:</span>
+                      <span className="font-medium text-rose-700">
+                        1 ETH = {formatCurrency(ethPrice)}
+                      </span>
+                    </div>
+                  )}
                   {qurbanType === "group" && (
                     <div className="text-xs text-gray-500">
                       Biaya per orang: {formatCurrency(totalCost / shareCount)}
@@ -446,7 +522,7 @@ export default function QurbanPenyaluranPage() {
             </h2>
           </div>
 
-          {selectedAnimal && totalCost > 0 && (
+          {selectedAnimal && totalCost > 0 && selectedOrg && (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <h3 className="font-medium text-gray-900 mb-3">
                 Ringkasan Pesanan
@@ -462,22 +538,28 @@ export default function QurbanPenyaluranPage() {
                     {qurbanType === "individual" ? "Individual" : "Patungan"}
                   </span>
                 </div>
+                <div>
+                  <span>
+                    Lembaga:{" "}
+                    {organizations.find((o) => o.id === selectedOrg)?.name}
+                  </span>
+                </div>
                 {qurbanType === "group" && (
                   <div className="flex justify-between">
                     <span>Jumlah peserta:</span>
                     <span className="font-medium">{shareCount} orang</span>
                   </div>
                 )}
-                {deliveryLocation && (
-                  <div className="flex justify-between">
-                    <span>Lokasi penyaluran:</span>
-                    <span className="font-medium">{deliveryLocation}</span>
-                  </div>
-                )}
                 <div className="flex justify-between pt-2 border-t border-gray-200">
                   <span className="font-medium">Total biaya:</span>
                   <span className="font-medium text-rose-600">
                     {formatCurrency(totalCost)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">ETH:</span>
+                  <span className="font-medium text-purple-600">
+                    {ethAmount} ETH
                   </span>
                 </div>
               </div>
@@ -490,9 +572,11 @@ export default function QurbanPenyaluranPage() {
 
           {/* Payment Button */}
           <button
-            disabled={!isConnected || !selectedAnimal || totalCost === 0}
+            disabled={
+              !isConnected || !selectedAnimal || totalCost === 0 || !selectedOrg
+            }
             className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${
-              isConnected && selectedAnimal && totalCost > 0
+              isConnected && selectedAnimal && totalCost > 0 && selectedOrg
                 ? "bg-rose-600 hover:bg-rose-700 text-white"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
@@ -502,7 +586,11 @@ export default function QurbanPenyaluranPage() {
               ? "Hubungkan Dompet untuk Menyalurkan"
               : !selectedAnimal
               ? "Pilih Hewan Qurban"
-              : "Salurkan Qurban Sekarang"}
+              : !selectedOrg
+              ? "Pilih Lembaga Penyalur"
+              : isLoadingEth
+              ? "Menghitung..."
+              : `Bayar ${ethAmount} ETH`}
           </button>
 
           {!isConnected && (
