@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -13,55 +13,91 @@ import {
   Users,
 } from "lucide-react";
 import { useAccount } from "wagmi";
+import Image from "next/image";
+import {
+  convertIdrToEth,
+  formatEth,
+  getEthereumPrice,
+} from "@/lib/api/cryptoPrice";
+import organizations from "@/data/destinationOrg";
 
 export default function ZakatFitrahPage() {
-  const [activeTab, setActiveTab] = useState<"simple" | "advanced">("simple");
-  const [simpleAmount, setSimpleAmount] = useState("");
   const [advancedInputs, setAdvancedInputs] = useState({
-    jumlahJiwa: "",
-    jenisZakat: "beras", // beras, gandum, kurma, kismis, uang
+    jumlahJiwa: "1",
+    jenisZakat: "beras",
     hargaPerKg: "",
-    customAmount: "",
   });
+  const [selectedOrg, setSelectedOrg] = useState<string>("");
+  const [ethAmount, setEthAmount] = useState<string>("0");
+  const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
+  const [ethPrice, setEthPrice] = useState<number>(0);
 
   const { isConnected } = useAccount();
 
-  // Standard rates for zakat fitrah
   const zakatFitrahRates = {
-    beras: { amount: 2.5, unit: "kg", price: 15000 }, // Rp 15,000 per kg
-    gandum: { amount: 2.5, unit: "kg", price: 20000 }, // Rp 20,000 per kg
-    kurma: { amount: 2.5, unit: "kg", price: 80000 }, // Rp 80,000 per kg
-    kismis: { amount: 2.5, unit: "kg", price: 100000 }, // Rp 100,000 per kg
+    beras: { amount: 2.5, unit: "kg", price: 15000 },
+    gandum: { amount: 2.5, unit: "kg", price: 20000 },
+    kurma: { amount: 2.5, unit: "kg", price: 50000 },
+    kismis: { amount: 2.5, unit: "kg", price: 100000 },
     uang: { amount: 37500, unit: "rupiah", price: 1 }, // Equivalent to 2.5kg rice
   };
 
-  const calculateSimpleZakat = () => {
-    const amount = parseFloat(simpleAmount) || 0;
-    return amount; // Simple mode: user enters the zakat amount directly
-  };
-
-  const calculateAdvancedZakat = () => {
+  const calculateZakat = () => {
     const jumlahJiwa = parseInt(advancedInputs.jumlahJiwa) || 0;
     const jenisZakat = advancedInputs.jenisZakat;
 
     if (jumlahJiwa === 0) return 0;
 
     if (jenisZakat === "uang") {
-      // Use custom amount if provided, otherwise use standard rate
-      const customAmount = parseFloat(advancedInputs.customAmount) || 0;
+      const customAmount = parseFloat(advancedInputs.hargaPerKg) || 0;
       if (customAmount > 0) {
         return jumlahJiwa * customAmount;
       } else {
         return jumlahJiwa * zakatFitrahRates.uang.amount;
       }
     } else {
-      // Calculate based on food type
       const rate =
         zakatFitrahRates[jenisZakat as keyof typeof zakatFitrahRates];
-      const hargaPerKg = parseFloat(advancedInputs.hargaPerKg) || rate.price;
-      return jumlahJiwa * rate.amount * hargaPerKg;
+      const pricePerKg = parseFloat(advancedInputs.hargaPerKg) || rate.price;
+      return jumlahJiwa * (rate.amount * pricePerKg);
     }
   };
+
+  const currentZakat = calculateZakat();
+
+  useEffect(() => {
+    const fetchEthPrice = async () => {
+      try {
+        const price = await getEthereumPrice();
+        setEthPrice(price);
+      } catch (err) {
+        console.error("Error fetching ETH price:", err);
+      }
+    };
+
+    fetchEthPrice();
+  }, []);
+
+  useEffect(() => {
+    const convertToEth = async () => {
+      if (currentZakat > 0) {
+        setIsLoadingEth(true);
+        try {
+          const eth = await convertIdrToEth(currentZakat);
+          setEthAmount(formatEth(eth));
+        } catch (err) {
+          console.error("Error converting to ETH:", err);
+        } finally {
+          setIsLoadingEth(false);
+        }
+      } else {
+        setEthAmount("0");
+      }
+    };
+
+    const timeoutId = setTimeout(convertToEth, 500);
+    return () => clearTimeout(timeoutId);
+  }, [currentZakat]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -70,10 +106,6 @@ export default function ZakatFitrahPage() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
-
-  const simpleZakat = calculateSimpleZakat();
-  const advancedZakat = calculateAdvancedZakat();
-  const currentZakat = activeTab === "simple" ? simpleZakat : advancedZakat;
 
   return (
     <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
@@ -113,268 +145,227 @@ export default function ZakatFitrahPage() {
                 Tentang Zakat Fitrah
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                Zakat fitrah wajib bagi setiap Muslim menjelang Idul Fitri.
-                Tidak ada nisab minimum, dan wajib dibayar untuk setiap jiwa
-                dalam keluarga termasuk bayi yang baru lahir.
+                Zakat fitrah adalah zakat yang wajib dikeluarkan setiap muslim
+                menjelang akhir bulan Ramadan, sebelum shalat Idul Fitri.
+                Besarnya zakat fitrah adalah 2,5 kg beras atau makanan pokok
+                setara per jiwa.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-3 bg-rose-50 rounded-lg">
-                  <span className="font-medium text-rose-800">Nisab:</span>
-                  <p className="text-rose-700">Tidak ada nisab</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Syarat Wajib:
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
+                    <li>Muslim</li>
+                    <li>Merdeka (bukan budak)</li>
+                    <li>Mampu (punya harta melebihi kebutuhan pokok)</li>
+                    <li>Berada di tempat yang berbeda waktu (musafir)</li>
+                  </ul>
                 </div>
-                <div className="p-3 bg-rose-50 rounded-lg">
-                  <span className="font-medium text-rose-800">Kadar:</span>
-                  <p className="text-rose-700">2,5 kg makanan pokok</p>
-                </div>
-                <div className="p-3 bg-rose-50 rounded-lg">
-                  <span className="font-medium text-rose-800">Waktu:</span>
-                  <p className="text-rose-700">Sebelum shalat Idul Fitri</p>
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Waktu Pembayaran:
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
+                    <li>Mulai dari awal Ramadan</li>
+                    <li>Sebelum shalat Idul Fitri</li>
+                    <li>Lebih utama malam takbiran</li>
+                  </ul>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Zakat Fitrah Options */}
+        {/* Organization Selection */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Pilihan Zakat Fitrah
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(zakatFitrahRates).map(([key, rate]) => (
-              <div key={key} className="p-4 border border-gray-200 rounded-lg">
-                <h4 className="font-medium text-gray-900 capitalize mb-2">
-                  {key}
-                </h4>
-                <div className="text-sm text-gray-600">
-                  <p>
-                    {rate.amount} {rate.unit} per jiwa
-                  </p>
-                  <p className="font-medium text-gray-900 mt-1">
-                    ≈ {formatCurrency(rate.amount * rate.price)}
-                  </p>
+          <div className="flex items-center gap-3 mb-4">
+            <Heart className="w-6 h-6 text-rose-600" />
+            <h2 className="text-xl font-medium text-gray-900">
+              Pilih Lembaga Penyalur
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {organizations.map((org) => (
+              <div
+                key={org.id}
+                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                  selectedOrg === org.id
+                    ? "border-rose-500 bg-rose-50"
+                    : "border-gray-200 hover:border-rose-300"
+                }`}
+                onClick={() => setSelectedOrg(org.id)}
+              >
+                <div className="relative h-16 mb-2">
+                  <Image
+                    src={org.logo}
+                    alt={org.name}
+                    fill
+                    className="object-contain"
+                  />
                 </div>
+                <p className="text-center font-medium mt-2">{org.name}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveTab("simple")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
-                activeTab === "simple"
-                  ? "bg-rose-100 text-rose-800 border border-rose-200"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <Zap className="w-4 h-4" />
-              Simple
-            </button>
-            <button
-              onClick={() => setActiveTab("advanced")}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
-                activeTab === "advanced"
-                  ? "bg-rose-100 text-rose-800 border border-rose-200"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              <Calculator className="w-4 h-4" />
-              Advanced
-            </button>
-          </div>
-        </div>
-
-        {/* Tab Content */}
+        {/* Zakat Calculator */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          {activeTab === "simple" ? (
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Pembayaran Simple
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Jika Anda sudah mengetahui jumlah zakat fitrah yang harus
-                  dibayar, masukkan langsung di sini.
-                </p>
-              </div>
+          <div className="flex items-center gap-3 mb-6">
+            <Calculator className="w-6 h-6 text-rose-600" />
+            <h2 className="text-xl font-medium text-gray-900">
+              Kalkulator Zakat Fitrah
+            </h2>
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Jumlah Zakat Fitrah yang Akan Dibayar
-                </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={simpleAmount}
-                    onChange={(e) => setSimpleAmount(e.target.value)}
-                    placeholder="Masukkan jumlah dalam Rupiah"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  />
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Jumlah Jiwa dalam Keluarga
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Users className="h-5 w-5 text-gray-400" />
                 </div>
-                {simpleAmount && parseFloat(simpleAmount) > 0 && (
-                  <p className="text-sm text-gray-500 mt-2">
-                    Jumlah yang akan dibayar:{" "}
-                    {formatCurrency(parseFloat(simpleAmount))}
-                  </p>
-                )}
+                <input
+                  type="number"
+                  value={advancedInputs.jumlahJiwa}
+                  onChange={(e) =>
+                    setAdvancedInputs({
+                      ...advancedInputs,
+                      jumlahJiwa: e.target.value,
+                    })
+                  }
+                  placeholder="Masukkan jumlah jiwa"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                />
               </div>
             </div>
-          ) : (
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Kalkulator Advanced
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Masukkan jumlah jiwa dalam keluarga dan pilih jenis zakat
-                  fitrah untuk menghitung secara otomatis.
-                </p>
-              </div>
 
-              {/* Number of People */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Jumlah Jiwa dalam Keluarga
-                </label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={advancedInputs.jumlahJiwa}
-                    onChange={(e) =>
-                      setAdvancedInputs((prev) => ({
-                        ...prev,
-                        jumlahJiwa: e.target.value,
-                      }))
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Jenis Zakat Fitrah
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {[
+                  { id: "beras", name: "Beras" },
+                  { id: "gandum", name: "Gandum" },
+                  { id: "kurma", name: "Kurma" },
+                  { id: "kismis", name: "Kismis" },
+                  { id: "uang", name: "Uang" },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() =>
+                      setAdvancedInputs({
+                        ...advancedInputs,
+                        jenisZakat: item.id,
+                      })
                     }
-                    placeholder="Masukkan jumlah jiwa"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                    min="1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Termasuk bayi yang baru lahir sebelum Idul Fitri
-                </p>
+                    className={`py-3 px-2 rounded-lg border-2 transition-colors ${
+                      advancedInputs.jenisZakat === item.id
+                        ? "border-rose-500 bg-rose-50 text-rose-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="font-medium text-sm">{item.name}</div>
+                    </div>
+                  </button>
+                ))}
               </div>
+            </div>
 
-              {/* Type of Zakat Fitrah */}
+            {advancedInputs.jenisZakat !== "uang" ? (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Jenis Zakat Fitrah
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Harga per Kg ({advancedInputs.jenisZakat}) (IDR)
+                  <span className="text-gray-500 font-normal ml-2">
+                    (standar:{" "}
+                    {formatCurrency(
+                      zakatFitrahRates[
+                        advancedInputs.jenisZakat as keyof typeof zakatFitrahRates
+                      ].price
+                    )}
+                    /kg)
+                  </span>
                 </label>
-                <select
-                  value={advancedInputs.jenisZakat}
+                <input
+                  type="number"
+                  value={advancedInputs.hargaPerKg}
                   onChange={(e) =>
-                    setAdvancedInputs((prev) => ({
-                      ...prev,
-                      jenisZakat: e.target.value,
-                    }))
+                    setAdvancedInputs({
+                      ...advancedInputs,
+                      hargaPerKg: e.target.value,
+                    })
                   }
+                  placeholder={`Masukkan harga per kg ${advancedInputs.jenisZakat}`}
                   className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                >
-                  <option value="beras">Beras (2,5 kg)</option>
-                  <option value="gandum">Gandum (2,5 kg)</option>
-                  <option value="kurma">Kurma (2,5 kg)</option>
-                  <option value="kismis">Kismis (2,5 kg)</option>
-                  <option value="uang">Uang (setara nilai makanan)</option>
-                </select>
+                />
               </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Jumlah per Jiwa (IDR)
+                  <span className="text-gray-500 font-normal ml-2">
+                    (standar: {formatCurrency(zakatFitrahRates.uang.amount)})
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  value={advancedInputs.hargaPerKg}
+                  onChange={(e) =>
+                    setAdvancedInputs({
+                      ...advancedInputs,
+                      hargaPerKg: e.target.value,
+                    })
+                  }
+                  placeholder="Masukkan jumlah per jiwa"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                />
+              </div>
+            )}
 
-              {/* Price per kg (for food types) */}
-              {advancedInputs.jenisZakat !== "uang" && (
+            {/* Zakat Calculation Result */}
+            <div className="mt-4">
+              <h4 className="font-medium text-gray-900 mb-2">
+                Ringkasan Perhitungan
+              </h4>
+              <div className="space-y-1 text-sm text-rose-700">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Harga per kg (Rp)
-                  </label>
-                  <input
-                    type="number"
-                    value={advancedInputs.hargaPerKg}
-                    onChange={(e) =>
-                      setAdvancedInputs((prev) => ({
-                        ...prev,
-                        hargaPerKg: e.target.value,
-                      }))
-                    }
-                    placeholder={`Harga standar: ${zakatFitrahRates[
-                      advancedInputs.jenisZakat as keyof typeof zakatFitrahRates
-                    ]?.price.toLocaleString()}`}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Kosongkan untuk menggunakan harga standar
-                  </p>
-                </div>
-              )}
-
-              {/* Custom amount for money */}
-              {advancedInputs.jenisZakat === "uang" && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Jumlah per Jiwa (Rp)
-                  </label>
-                  <input
-                    type="number"
-                    value={advancedInputs.customAmount}
-                    onChange={(e) =>
-                      setAdvancedInputs((prev) => ({
-                        ...prev,
-                        customAmount: e.target.value,
-                      }))
-                    }
-                    placeholder={`Standar: ${zakatFitrahRates.uang.amount.toLocaleString()}`}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Kosongkan untuk menggunakan nilai standar (setara 2,5 kg
-                    beras)
-                  </p>
-                </div>
-              )}
-
-              {/* Calculation Summary */}
-              {parseInt(advancedInputs.jumlahJiwa) > 0 && (
-                <div className="p-4 bg-rose-50 rounded-lg border border-rose-200">
-                  <h4 className="font-medium text-rose-800 mb-2">
-                    Ringkasan Perhitungan
-                  </h4>
-                  <div className="space-y-1 text-sm text-rose-700">
-                    <p>Jumlah jiwa: {advancedInputs.jumlahJiwa} orang</p>
-                    <p>Jenis zakat: {advancedInputs.jenisZakat}</p>
-                    {advancedInputs.jenisZakat !== "uang" && (
-                      <>
-                        <p>
-                          Jumlah total:{" "}
-                          {parseFloat(advancedInputs.jumlahJiwa) * 2.5} kg
-                        </p>
-                        <p>
-                          Harga per kg:{" "}
-                          {formatCurrency(
-                            parseFloat(advancedInputs.hargaPerKg) ||
+                  Zakat per jiwa:{" "}
+                  {advancedInputs.jenisZakat === "uang"
+                    ? formatCurrency(
+                        advancedInputs.hargaPerKg
+                          ? parseFloat(advancedInputs.hargaPerKg)
+                          : zakatFitrahRates.uang.amount
+                      )
+                    : `${
+                        zakatFitrahRates[
+                          advancedInputs.jenisZakat as keyof typeof zakatFitrahRates
+                        ].amount
+                      } kg ${advancedInputs.jenisZakat} (${formatCurrency(
+                        advancedInputs.hargaPerKg
+                          ? parseFloat(advancedInputs.hargaPerKg) *
                               zakatFitrahRates[
                                 advancedInputs.jenisZakat as keyof typeof zakatFitrahRates
-                              ]?.price
-                          )}
-                        </p>
-                      </>
-                    )}
-                    {advancedInputs.jenisZakat === "uang" && (
-                      <p>
-                        Jumlah per jiwa:{" "}
-                        {formatCurrency(
-                          parseFloat(advancedInputs.customAmount) ||
-                            zakatFitrahRates.uang.amount
-                        )}
-                      </p>
-                    )}
-                  </div>
+                              ].amount
+                          : zakatFitrahRates[
+                              advancedInputs.jenisZakat as keyof typeof zakatFitrahRates
+                            ].price *
+                              zakatFitrahRates[
+                                advancedInputs.jenisZakat as keyof typeof zakatFitrahRates
+                              ].amount
+                      )})`}
                 </div>
-              )}
+                <div>
+                  Total zakat untuk {advancedInputs.jumlahJiwa} jiwa:{" "}
+                  {formatCurrency(currentZakat)}
+                </div>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Zakat Calculation Result */}
           <div className="mt-6 p-4 bg-rose-50 rounded-lg border border-rose-200">
@@ -386,14 +377,53 @@ export default function ZakatFitrahPage() {
                 {formatCurrency(currentZakat)}
               </span>
             </div>
+            {/* ETH Conversion */}
+            {currentZakat > 0 && (
+              <div className="flex justify-between items-center pt-2 border-t border-rose-200 mt-2">
+                <span className="text-gray-700">Jumlah dalam ETH:</span>
+                <div className="flex items-center">
+                  {isLoadingEth ? (
+                    <div className="h-4 w-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin mr-2" />
+                  ) : (
+                    <span className="font-medium text-purple-600">
+                      {ethAmount} ETH
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+            {ethPrice > 0 && (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">Kurs:</span>
+                <span className="font-medium text-rose-700">
+                  1 ETH = {formatCurrency(ethPrice)}
+                </span>
+              </div>
+            )}
             {currentZakat === 0 && (
               <p className="text-sm text-rose-700 mt-2">
-                {activeTab === "simple"
-                  ? "Masukkan jumlah zakat fitrah yang akan dibayar"
-                  : "Masukkan jumlah jiwa dalam keluarga untuk menghitung zakat fitrah"}
+                Masukkan jumlah jiwa dalam keluarga untuk menghitung zakat
+                fitrah
               </p>
             )}
           </div>
+
+          {/* Order Summary */}
+          {currentZakat > 0 && selectedOrg && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">
+                Ringkasan Pesanan
+              </h4>
+              <div className="space-y-1 text-sm text-gray-600">
+                <div>
+                  Lembaga:{" "}
+                  {organizations.find((o) => o.id === selectedOrg)?.name}
+                </div>
+                <div>Jumlah: {formatCurrency(currentZakat)}</div>
+                <div>ETH: {ethAmount} ETH</div>
+              </div>
+            </div>
+          )}
 
           {/* Important Notes */}
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -413,9 +443,9 @@ export default function ZakatFitrahPage() {
           {/* Payment Button */}
           <div className="mt-6">
             <button
-              disabled={!isConnected || currentZakat === 0}
+              disabled={!isConnected || currentZakat === 0 || !selectedOrg}
               className={`w-full py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
-                isConnected && currentZakat > 0
+                isConnected && currentZakat > 0 && selectedOrg
                   ? "bg-rose-600 hover:bg-rose-700 text-white shadow-lg hover:shadow-xl"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
@@ -425,7 +455,11 @@ export default function ZakatFitrahPage() {
                 ? "Hubungkan Dompet untuk Membayar"
                 : currentZakat === 0
                 ? "Masukkan Data Keluarga"
-                : `Bayar Zakat Fitrah ${formatCurrency(currentZakat)}`}
+                : !selectedOrg
+                ? "Pilih Lembaga Penyalur"
+                : isLoadingEth
+                ? "Menghitung..."
+                : `Bayar ${ethAmount} ETH`}
             </button>
 
             {!isConnected && (

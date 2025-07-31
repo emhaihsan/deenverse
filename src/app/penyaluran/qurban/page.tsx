@@ -7,12 +7,8 @@ import {
   Wallet,
   Info,
   Users,
-  Calendar,
-  MapPin,
-  Calculator,
   Heart,
   CheckCircle,
-  Loader2,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
@@ -22,36 +18,9 @@ import {
   formatEth,
   getEthereumPrice,
 } from "@/lib/api/cryptoPrice";
-
-const organizations = [
-  {
-    id: "baznas",
-    name: "Baznas",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Logo_BAZNAS_RI-Hijau-01.png",
-  },
-  {
-    id: "lazisnu",
-    name: "LazisNU",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Logo_NU_CARE-LAZISNU.jpg/1280px-Logo_NU_CARE-LAZISNU.jpg",
-  },
-  {
-    id: "lazismu",
-    name: "LazisMU",
-    logo: "https://lazismuorg.sgp1.digitaloceanspaces.com/wp-content/uploads/2025/07/02095630/lazismu-square.png",
-  },
-];
-
-interface QurbanAnimal {
-  id: string;
-  name: string;
-  price: number;
-  maxShares: number;
-  minAge: string;
-  description: string;
-  icon: string;
-  color: string;
-  benefits: string[];
-}
+import organizations from "@/data/destinationOrg";
+import { QurbanAnimal } from "@/types/animals";
+import qurbanAnimals from "@/data/qurbanData";
 
 export default function QurbanPenyaluranPage() {
   const { isConnected } = useAccount();
@@ -68,54 +37,6 @@ export default function QurbanPenyaluranPage() {
   const [ethAmount, setEthAmount] = useState<string>("0");
   const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
   const [ethPrice, setEthPrice] = useState<number>(0);
-
-  const qurbanAnimals: QurbanAnimal[] = [
-    {
-      id: "goat",
-      name: "Kambing/Domba",
-      price: 2500000,
-      maxShares: 1,
-      minAge: "1 tahun (2 gigi tetap)",
-      description: "Kambing atau domba yang sehat dan memenuhi syarat",
-      icon: "🐐",
-      color: "bg-green-50 border-green-200 text-green-700",
-      benefits: [
-        "1 ekor untuk 1 orang",
-        "Daging berkualitas tinggi",
-        "Mudah didistribusi",
-      ],
-    },
-    {
-      id: "cow",
-      name: "Sapi/Kerbau",
-      price: 15000000,
-      maxShares: 7,
-      minAge: "2 tahun (4 gigi tetap)",
-      description: "Sapi atau kerbau yang sehat dan memenuhi syarat",
-      icon: "🐄",
-      color: "bg-blue-50 border-blue-200 text-blue-700",
-      benefits: [
-        "1 ekor untuk maksimal 7 orang",
-        "Daging melimpah",
-        "Ekonomis untuk grup",
-      ],
-    },
-    {
-      id: "camel",
-      name: "Unta",
-      price: 40000000,
-      maxShares: 7,
-      minAge: "5 tahun",
-      description: "Unta yang sehat dan memenuhi syarat",
-      icon: "🐪",
-      color: "bg-amber-50 border-amber-200 text-amber-700",
-      benefits: [
-        "1 ekor untuk maksimal 7 orang",
-        "Pahala berlimpah",
-        "Tradisi Nabi",
-      ],
-    },
-  ];
 
   useEffect(() => {
     if (selectedAnimal) {
