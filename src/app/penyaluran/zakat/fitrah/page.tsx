@@ -6,10 +6,8 @@ import {
   ArrowLeft,
   Heart,
   Calculator,
-  Zap,
   Wallet,
   Info,
-  DollarSign,
   Users,
 } from "lucide-react";
 import { useAccount } from "wagmi";
