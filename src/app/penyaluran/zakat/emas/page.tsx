@@ -12,10 +12,13 @@ import {
   DollarSign,
   AlertCircle,
   RefreshCw,
+  Users,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { getCurrentGoldPrice, getNisabAmount } from "@/lib/api/goldPrice";
 import { convertIdrToEth, formatEth } from "@/lib/api/cryptoPrice";
+import organizations from "@/data/destinationOrg";
+import Image from "next/image";
 
 const zakatTypesEmas = [
   {
@@ -60,6 +63,7 @@ export default function NisabEmasPage() {
   const [simpleAmount, setSimpleAmount] = useState("");
   const [ethAmount, setEthAmount] = useState<string>("0.000000");
   const [isConverting, setIsConverting] = useState<boolean>(false);
+  const [selectedOrg, setSelectedOrg] = useState<string>("");
 
   const { isConnected } = useAccount();
 
@@ -149,162 +153,146 @@ export default function NisabEmasPage() {
           className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-800 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>Kembali ke Kalkulator Zakat</span>
+          <span>Kembali ke Kategori Zakat</span>
         </Link>
 
         {/* Header */}
-        <div className="text-center">
+        <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="p-3 bg-yellow-50 rounded-2xl border border-yellow-200">
+            <div className="p-3 bg-yellow-100 rounded-2xl border border-yellow-200">
               <Coins className="w-8 h-8 text-yellow-600" />
             </div>
           </div>
           <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-            Nisab Emas
+            Zakat Emas
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-            85 gram emas (± Rp 110-115 juta) • Kadar 2,5% • Haul 1 tahun
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
+            Nisab: 85 gram emas • Kadar: 2.5% • Haul: 1 tahun
           </p>
         </div>
 
-        {/* Nisab Information */}
+        {/* Info Section */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
-          <div className="flex items-start gap-4">
-            <Info className="w-6 h-6 text-yellow-600 mt-1 flex-shrink-0" />
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-3">
-                Tentang Nisab Emas
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                Semua harta likuid dan aset yang nilainya setara uang masuk ke
-                kategori ini. Berbagai jenis harta bisa digabung untuk mencapai
-                nisab minimum.
+          <div className="flex items-center gap-3 mb-4">
+            <Info className="w-6 h-6 text-yellow-600" />
+            <h2 className="text-xl font-medium text-gray-900">Informasi</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 text-sm">
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <h3 className="font-medium text-yellow-800 mb-1">Nisab</h3>
+              <p className="text-gray-700">
+                {goldPrice ? (
+                  <>
+                    85 gram emas = {formatCurrency(nishab)}
+                    <br />
+                    <span className="text-xs text-gray-500">
+                      (Harga emas: {formatCurrency(goldPrice)}/gram)
+                    </span>
+                  </>
+                ) : (
+                  "Memuat data..."
+                )}
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-3 bg-yellow-50 rounded-lg">
-                  <span className="font-medium text-yellow-800">Nisab:</span>
-                  <p className="text-yellow-700">{formatCurrency(nishab)}</p>
-                </div>
-                <div className="p-3 bg-yellow-50 rounded-lg">
-                  <span className="font-medium text-yellow-800">Kadar:</span>
-                  <p className="text-yellow-700">2,5% dari total harta</p>
-                </div>
-                <div className="p-3 bg-yellow-50 rounded-lg">
-                  <span className="font-medium text-yellow-800">Haul:</span>
-                  <p className="text-yellow-700">1 tahun kepemilikan</p>
-                </div>
-              </div>
+            </div>
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <h3 className="font-medium text-yellow-800 mb-1">Kadar</h3>
+              <p className="text-gray-700">
+                2.5% dari total harta yang tersimpan
+              </p>
+            </div>
+            <div className="bg-yellow-50 p-4 rounded-lg">
+              <h3 className="font-medium text-yellow-800 mb-1">Haul</h3>
+              <p className="text-gray-700">1 tahun penimbunan harta</p>
             </div>
           </div>
-        </div>
-
-        {/* Gold Price */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-                <Coins className="w-5 h-5 mr-2 text-amber-500" />
-                Harga Emas Terkini
-              </h2>
-              <p className="text-sm text-gray-600">
-                Harga jual emas per gram (ANTAM)
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {lastUpdated && `Terakhir diperbarui: ${lastUpdated}`}
-              </p>
-            </div>
-
-            <div className="text-right">
-              {isLoading ? (
-                <div className="animate-pulse flex items-center justify-end">
-                  <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                  <span>Memuat...</span>
-                </div>
-              ) : error ? (
-                <div className="text-sm text-red-600">{error}</div>
-              ) : (
-                <>
-                  <p className="text-2xl font-bold text-emerald-700">
-                    Rp {goldPrice?.toLocaleString("id-ID") || "..."}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Nishab: Rp {nishab.toLocaleString("id-ID")} (85 gram)
-                  </p>
-                </>
-              )}
-
+          <div className="mt-4 text-sm text-gray-600 flex items-center justify-between">
+            <p>
+              Terakhir diperbarui: {lastUpdated || "Memuat..."}
               <button
                 onClick={fetchGoldData}
                 disabled={isLoading}
-                className={`mt-2 text-sm flex items-center ml-auto ${
-                  isLoading
-                    ? "text-gray-400"
-                    : "text-emerald-600 hover:text-emerald-800"
-                }`}
+                className="ml-2 text-yellow-600 hover:text-yellow-700 disabled:opacity-50"
               >
                 <RefreshCw
-                  className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 inline ${
+                    isLoading ? "animate-spin" : ""
+                  }`}
                 />
-                Perbarui Harga
               </button>
-            </div>
+            </p>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
-
-          {error && (
-            <div className="mt-4 p-3 bg-yellow-50 text-yellow-700 rounded-md text-sm flex items-start">
-              <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
         </div>
 
         {/* Zakat Calculator */}
         <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          {/* Tab Navigation */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-2 mb-6">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setActiveTab("simple")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
-                  activeTab === "simple"
-                    ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Zap className="w-4 h-4" />
-                Simple
-              </button>
-              <button
-                onClick={() => setActiveTab("advanced")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
-                  activeTab === "advanced"
-                    ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Calculator className="w-4 h-4" />
-                Advanced
-              </button>
-            </div>
+          <div className="flex items-center gap-3 mb-6">
+            <Calculator className="w-6 h-6 text-yellow-600" />
+            <h2 className="text-xl font-medium text-gray-900">
+              Kalkulator Zakat
+            </h2>
           </div>
 
-          {/* Tab Content */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
-            {activeTab === "simple" ? (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Pembayaran Simple
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    Jika Anda sudah mengetahui jumlah zakat yang harus dibayar,
-                    masukkan langsung di sini.
-                  </p>
-                </div>
+          {/* Tabs */}
+          <div className="flex border-b border-gray-200 mb-6">
+            <button
+              onClick={() => setActiveTab("simple")}
+              className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${
+                activeTab === "simple"
+                  ? "border-yellow-600 text-yellow-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Sederhana
+            </button>
+            <button
+              onClick={() => setActiveTab("advanced")}
+              className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${
+                activeTab === "advanced"
+                  ? "border-yellow-600 text-yellow-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Lanjutan
+            </button>
+          </div>
 
-                <div>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Pilih Lembaga Penyalur
+              </label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {organizations.map((org) => (
+                <div
+                  key={org.id}
+                  className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                    selectedOrg === org.id
+                      ? "border-rose-500 bg-rose-50"
+                      : "border-gray-200 hover:border-rose-300"
+                  }`}
+                  onClick={() => setSelectedOrg(org.id)}
+                >
+                  <div className="relative h-16 mb-2">
+                    <Image
+                      src={org.logo}
+                      alt={org.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <p className="text-center font-medium mt-2">{org.name}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Simple Tab */}
+            {activeTab === "simple" ? (
+              <div>
+                <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Jumlah Zakat yang Akan Dibayar
+                    Jumlah Zakat (Rupiah)
                   </label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -365,6 +353,23 @@ export default function NisabEmasPage() {
                     Jumlah zakat menggunakan nilai minimum (2.5% dari nisab)
                   </p>
                 )}
+
+                {/* Order Summary */}
+                {currentZakat > 0 && selectedOrg && (
+                  <div className="mt-4 pt-4 border-t border-yellow-200">
+                    <h4 className="font-medium text-gray-900 mb-2">
+                      Ringkasan Pesanan
+                    </h4>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <div>
+                        Lembaga:{" "}
+                        {organizations.find((o) => o.id === selectedOrg)?.name}
+                      </div>
+                      <div>Jumlah: {formatCurrency(currentZakat)}</div>
+                      <div>ETH: {ethAmount} ETH</div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -372,9 +377,9 @@ export default function NisabEmasPage() {
             {activeTab === "simple" && (
               <div className="mt-6">
                 <button
-                  disabled={!isConnected || currentZakat === 0}
+                  disabled={!isConnected || currentZakat === 0 || !selectedOrg}
                   className={`w-full py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
-                    isConnected && currentZakat > 0
+                    isConnected && currentZakat > 0 && selectedOrg
                       ? "bg-yellow-600 hover:bg-yellow-700 text-white shadow-lg hover:shadow-xl"
                       : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
@@ -384,6 +389,8 @@ export default function NisabEmasPage() {
                     ? "Hubungkan Dompet untuk Membayar"
                     : currentZakat === 0
                     ? "Masukkan Jumlah Zakat"
+                    : !selectedOrg
+                    ? "Pilih Lembaga Penyalur"
                     : `Bayar Zakat ${formatCurrency(currentZakat)}`}
                 </button>
 
