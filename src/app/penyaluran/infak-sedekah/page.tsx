@@ -3,6 +3,14 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { parseEther } from "viem";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  deenVerseDistributionABI,
+  deenVerseDistributionAddress,
+} from "@/lib/blockchain";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal, CheckCircle, XCircle, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -23,15 +31,22 @@ import Image from "next/image";
 import organizations from "@/data/destinationOrg";
 
 export default function InfakSedekahPenyaluranPage() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [amount, setAmount] = useState<number>(0);
   const [description, setDescription] = useState<string>("");
   const [selectedOrg, setSelectedOrg] = useState<string>("");
   const [ethAmount, setEthAmount] = useState<string>("0");
   const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
   const [ethPrice, setEthPrice] = useState<number>(0);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string>("");
+
+  const { data: hash, isPending, writeContract } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
 
   const presetAmounts = [50000, 100000, 250000, 500000, 1000000];
 
@@ -75,11 +90,14 @@ export default function InfakSedekahPenyaluranPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isConnected) {
+    setError(null);
+    setStatusMessage("");
+
+    if (!isConnected || !address) {
       setError("Harap sambungkan dompet Anda terlebih dahulu");
       return;
     }
-    if (amount <= 0) {
+    if (amount <= 0 || !ethAmount) {
       setError("Mohon masukkan nominal yang valid");
       return;
     }
@@ -88,23 +106,64 @@ export default function InfakSedekahPenyaluranPage() {
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      // TODO: Implement payment processing
-      console.log({
-        amount,
-        ethAmount,
-        description,
-        organization: selectedOrg,
+      // Step 1: Generate NFT Metadata via our API
+      setStatusMessage("1/3: Membuat sertifikat NFT...");
+      const orgName =
+        organizations.find((o) => o.id === selectedOrg)?.name ||
+        "Lembaga Terpilih";
+      const today = new Date().toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
       });
-      // router.push("/pembayaran/berhasil");
-    } catch (err) {
-      console.error("Payment error:", err);
-      setError("Terjadi kesalahan saat memproses pembayaran");
-    } finally {
-      setIsSubmitting(false);
+
+      const apiResponse = await fetch("/api/certificate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          walletAddress: address,
+          amount: amount.toString(),
+          date: today,
+          type: "Infaq & Sedekah",
+          orgName: orgName,
+        }),
+      });
+
+      if (!apiResponse.ok) {
+        throw new Error("Gagal mempersiapkan sertifikat NFT.");
+      }
+
+      const { tokenURI } = await apiResponse.json();
+      if (!tokenURI) {
+        throw new Error("Gagal mendapatkan URI metadata NFT.");
+      }
+      setStatusMessage("2/3: Sertifikat siap. Menunggu konfirmasi dompet...");
+
+      // Step 2: Call the smart contract's makePayment function
+      writeContract({
+        address: deenVerseDistributionAddress,
+        abi: deenVerseDistributionABI,
+        functionName: "makePayment",
+        args: [
+          selectedOrg, // orgId
+          1, // paymentType (1 for INFAQ)
+          "Infaq & Sedekah", // subType
+          description, // note
+          tokenURI, // tokenURI
+        ],
+        value: parseEther(ethAmount as `${number}`),
+      });
+    } catch (err: any) {
+      console.error("Submission error:", err);
+      setError(
+        err.message || "Terjadi kesalahan saat memproses permintaan Anda"
+      );
+      setStatusMessage("");
     }
   };
+
+  const isSubmitting = isPending || isConfirming;
 
   return (
     <div className="bg-gray-50 py-8 px-4 md:px-8">
@@ -337,29 +396,73 @@ export default function InfakSedekahPenyaluranPage() {
           <button
             onClick={handleSubmit}
             disabled={
-              !isConnected || amount === 0 || isLoadingEth || !selectedOrg
+              !isConnected ||
+              amount === 0 ||
+              isLoadingEth ||
+              !selectedOrg ||
+              isSubmitting
             }
-            className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${
-              isConnected && amount > 0 && !isLoadingEth && selectedOrg
+            className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
+              isConnected &&
+              amount > 0 &&
+              !isLoadingEth &&
+              selectedOrg &&
+              !isSubmitting
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
           >
-            <Wallet className="w-5 h-5" />
-            {!isConnected
-              ? "Hubungkan Dompet untuk Menyalurkan"
-              : amount === 0
-              ? "Masukkan Jumlah untuk Menyalurkan"
-              : isLoadingEth
-              ? "Menghitung..."
-              : `Bayar ${ethAmount} ETH`}
+            {isSubmitting ? (
+              <>
+                <Loader className="w-5 h-5 animate-spin" />{" "}
+                {statusMessage || "Memproses..."}
+              </>
+            ) : (
+              <>
+                <Wallet className="w-5 h-5" /> Bayar & Mint Sertifikat
+              </>
+            )}
           </button>
 
+          {/* Status Messages */}
+          {error && (
+            <Alert variant="destructive">
+              <XCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {isSubmitting && !error && (
+            <Alert>
+              <Loader className="h-4 w-4 animate-spin" />
+              <AlertTitle>Sedang Diproses</AlertTitle>
+              <AlertDescription>{statusMessage}</AlertDescription>
+            </Alert>
+          )}
+
+          {isConfirmed && (
+            <Alert variant="default">
+              <CheckCircle className="h-4 w-4" />
+              <AlertTitle>Transaksi Berhasil!</AlertTitle>
+              <AlertDescription>
+                Donasi Anda telah berhasil dicatat di blockchain. Terima kasih!
+                <a
+                  href={`https://sepolia-blockscout.lisk.com/tx/${hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-green-700 hover:underline ml-2"
+                >
+                  Lihat Transaksi
+                </a>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {!isConnected && (
-            <p className="text-sm text-gray-500 mt-3 text-center">
-              Anda perlu menghubungkan dompet Xellar untuk menyalurkan infaq
-              atau sedekah
-            </p>
+            <div className="text-center text-sm text-gray-500">
+              Harap hubungkan dompet Anda untuk melanjutkan pembayaran.
+            </div>
           )}
         </div>
       </div>
