@@ -20,6 +20,8 @@ contract DeenVerseDistributionTest is Test {
     string public constant ORG1_NAME = "Baitul Mal";
     string public constant ORG2_NAME = "Dompet Dhuafa";
 
+    string public constant IPFS_URI = "ipfs://QmExampleMetadataHash";
+
     uint256 public constant PAYMENT_AMOUNT = 1 ether;
 
     function setUp() public {
@@ -89,7 +91,7 @@ contract DeenVerseDistributionTest is Test {
         vm.deal(user1, PAYMENT_AMOUNT);
         vm.prank(user1);
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
 
         // Check balances
@@ -117,7 +119,7 @@ contract DeenVerseDistributionTest is Test {
         vm.deal(user1, PAYMENT_AMOUNT);
         vm.prank(user1);
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
 
         // Check SBT was minted
@@ -136,7 +138,9 @@ contract DeenVerseDistributionTest is Test {
     function test_RevertIfZeroAmount() public {
         vm.prank(user1);
         vm.expectRevert("Amount must be greater than 0");
-        distribution.makePayment{value: 0}(ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas");
+        distribution.makePayment{value: 0}(
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
+        );
     }
 
     // Test payment reverts with invalid org ID
@@ -145,7 +149,7 @@ contract DeenVerseDistributionTest is Test {
         vm.prank(user1);
         vm.expectRevert("Organization ID is required");
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            "", DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            "", DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
     }
 
@@ -159,7 +163,7 @@ contract DeenVerseDistributionTest is Test {
         vm.prank(user1);
         vm.expectRevert("Organization is not active");
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
     }
 
@@ -169,7 +173,7 @@ contract DeenVerseDistributionTest is Test {
         vm.deal(user1, PAYMENT_AMOUNT);
         vm.prank(user1);
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
 
         // Check initial balance
@@ -193,7 +197,7 @@ contract DeenVerseDistributionTest is Test {
         vm.deal(user1, PAYMENT_AMOUNT);
         vm.prank(user1);
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
 
         // Check initial balance
@@ -248,7 +252,11 @@ contract DeenVerseDistributionTest is Test {
             vm.deal(user, PAYMENT_AMOUNT);
             vm.prank(user);
             distribution.makePayment{value: PAYMENT_AMOUNT}(
-                ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", string(abi.encodePacked("Zakat emas ", i))
+                ORG1_ID,
+                DeenVerseDistribution.PaymentType.ZAKAT,
+                "emas",
+                string(abi.encodePacked("Zakat emas ", i)),
+                IPFS_URI
             );
         }
 
@@ -281,7 +289,7 @@ contract DeenVerseDistributionTest is Test {
 
         for (uint256 i = 0; i < paymentTypes.length; i++) {
             distribution.makePayment{value: PAYMENT_AMOUNT}(
-                ORG1_ID, paymentTypes[i], subTypes[i], string(abi.encodePacked("Payment ", i))
+                ORG1_ID, paymentTypes[i], subTypes[i], string(abi.encodePacked("Payment ", i)), IPFS_URI
             );
         }
 
@@ -320,7 +328,11 @@ contract DeenVerseDistributionTest is Test {
         for (uint256 i = 0; i < 3; i++) {
             vm.prank(user1);
             distribution.makePayment{value: PAYMENT_AMOUNT}(
-                ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", string(abi.encodePacked("Zakat emas ", i))
+                ORG1_ID,
+                DeenVerseDistribution.PaymentType.ZAKAT,
+                "emas",
+                string(abi.encodePacked("Zakat emas ", i)),
+                IPFS_URI
             );
         }
 
@@ -329,7 +341,11 @@ contract DeenVerseDistributionTest is Test {
         for (uint256 i = 0; i < 2; i++) {
             vm.prank(user2);
             distribution.makePayment{value: PAYMENT_AMOUNT}(
-                ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", string(abi.encodePacked("Zakat emas ", i))
+                ORG1_ID,
+                DeenVerseDistribution.PaymentType.ZAKAT,
+                "emas",
+                string(abi.encodePacked("Zakat emas ", i)),
+                IPFS_URI
             );
         }
 
@@ -359,7 +375,7 @@ contract DeenVerseDistributionTest is Test {
         vm.deal(user1, PAYMENT_AMOUNT);
         vm.prank(user1);
         distribution.makePayment{value: PAYMENT_AMOUNT}(
-            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas"
+            ORG1_ID, DeenVerseDistribution.PaymentType.ZAKAT, "emas", "Zakat emas", IPFS_URI
         );
 
         (uint256 amount, address organization,, string memory paymentType, string memory subType) = sbt.donationInfo(1);

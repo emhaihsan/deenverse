@@ -3,10 +3,14 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract DeenVerseSBT is ERC721, Ownable {
     // Use uint256 instead of Counter
     uint256 private _nextTokenId;
+
+    // Mapping from token ID to token URI
+    mapping(uint256 => string) private _tokenURIs;
 
     struct DonationInfo {
         uint256 amount;
@@ -23,14 +27,25 @@ contract DeenVerseSBT is ERC721, Ownable {
         _nextTokenId = 1; // Start from 1
     }
 
-    function mint(address to, uint256 amount, address organization, string memory paymentType, string memory subType)
-        external
-        onlyOwner
-        returns (uint256)
-    {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_ownerOf(tokenId) != address(0), "ERC721Metadata: URI query for nonexistent token");
+        string memory uri = _tokenURIs[tokenId];
+        require(bytes(uri).length > 0, "ERC721Metadata: URI not set for token");
+        return uri;
+    }
+
+    function mint(
+        address to,
+        string memory tokenURI_,
+        uint256 amount,
+        address organization,
+        string memory paymentType,
+        string memory subType
+    ) external onlyOwner returns (uint256) {
         uint256 tokenId = _nextTokenId++;
 
         _safeMint(to, tokenId);
+        _tokenURIs[tokenId] = tokenURI_;
 
         donationInfo[tokenId] = DonationInfo({
             amount: amount,

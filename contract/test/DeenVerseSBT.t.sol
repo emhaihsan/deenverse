@@ -10,20 +10,28 @@ contract DeenVerseSBTTest is Test {
     address public donor = address(0xBEEF);
     address public org = address(0xCAFE);
 
+    string public constant IPFS_URI = "ipfs://QmExampleMetadataHash";
+
     function setUp() public {
         vm.prank(owner);
         sbt = new DeenVerseSBT();
     }
 
     function testMintingWorks() public {
-        // Prank sebagai owner supaya bisa mint
         vm.startPrank(owner);
 
         uint256 amount = 100 ether;
         string memory paymentType = "USDC";
         string memory subType = "Zakat";
 
-        uint256 tokenId = sbt.mint(donor, amount, org, paymentType, subType);
+        uint256 tokenId = sbt.mint(
+            donor,
+            IPFS_URI, // tokenURI_
+            amount,
+            org,
+            paymentType,
+            subType
+        );
 
         vm.stopPrank();
 
@@ -36,6 +44,9 @@ contract DeenVerseSBTTest is Test {
         // Pastikan owner token sesuai
         assertEq(sbt.ownerOf(tokenId), donor);
 
+        // Pastikan tokenURI sesuai
+        assertEq(sbt.tokenURI(tokenId), IPFS_URI);
+
         // Ambil data donasi dan pastikan nilainya benar
         DeenVerseSBT.DonationInfo memory info = sbt.getTokenDetails(tokenId);
         assertEq(info.amount, amount);
@@ -45,18 +56,16 @@ contract DeenVerseSBTTest is Test {
     }
 
     function testOnlyOwnerCanMint() public {
-        // Prank sebagai orang lain
         vm.prank(donor);
         vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", donor));
-        sbt.mint(donor, 100 ether, org, "USDC", "Zakat");
+        sbt.mint(donor, IPFS_URI, 100 ether, org, "USDC", "Zakat");
     }
 
     function testSoulboundCannotTransfer() public {
         vm.startPrank(owner);
-        sbt.mint(donor, 100 ether, org, "USDC", "Zakat");
+        sbt.mint(donor, IPFS_URI, 100 ether, org, "USDC", "Zakat");
         vm.stopPrank();
 
-        // Coba transfer
         vm.prank(donor);
         vm.expectRevert(bytes("Soulbound: Token is non-transferable"));
         sbt.transferFrom(donor, address(0x1234), 1);
@@ -64,11 +73,34 @@ contract DeenVerseSBTTest is Test {
 
     function testSoulboundCannotApprove() public {
         vm.startPrank(owner);
-        sbt.mint(donor, 100 ether, org, "USDC", "Zakat");
+        sbt.mint(donor, IPFS_URI, 100 ether, org, "USDC", "Zakat");
         vm.stopPrank();
 
         vm.prank(donor);
         vm.expectRevert(bytes("Soulbound: Token is non-transferable"));
         sbt.approve(address(0x1234), 1);
+    }
+
+    function testGetTokenDetails() public {
+        vm.startPrank(owner);
+        uint256 tokenId = sbt.mint(donor, IPFS_URI, 50 ether, org, "ETH", "Infaq");
+        vm.stopPrank();
+
+        DeenVerseSBT.DonationInfo memory info = sbt.getTokenDetails(tokenId);
+        assertEq(info.amount, 50 ether);
+        assertEq(info.organization, org);
+        assertEq(info.paymentType, "ETH");
+        assertEq(info.subType, "Infaq");
+    }
+
+    function testTotalSupplyIncreases() public {
+        vm.startPrank(owner);
+
+        sbt.mint(donor, IPFS_URI, 1 ether, org, "ETH", "Type1");
+        sbt.mint(donor, IPFS_URI, 2 ether, org, "ETH", "Type2");
+
+        vm.stopPrank();
+
+        assertEq(sbt.totalSupply(), 2);
     }
 }

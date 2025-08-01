@@ -85,11 +85,15 @@ contract DeenVerseDistribution is Ownable {
      * @param paymentType Type of payment (ZAKAT, INFQ, etc.)
      * @param subType Subtype of the payment (e.g., "emas", "fitrah")
      * @param note Optional note for the payment
+     * @param tokenURI The unique metadata URI from IPFS for the SBT
      */
-    function makePayment(string calldata orgId, PaymentType paymentType, string calldata subType, string calldata note)
-        external
-        payable
-    {
+    function makePayment(
+        string calldata orgId,
+        PaymentType paymentType,
+        string calldata subType,
+        string calldata note,
+        string calldata tokenURI
+    ) external payable {
         require(msg.value > 0, "Amount must be greater than 0");
         require(bytes(orgId).length > 0, "Organization ID is required");
         require(organizations[orgId].isActive, "Organization is not active");
@@ -118,7 +122,7 @@ contract DeenVerseDistribution is Ownable {
 
         // Mint Soulbound Token for the donor
         deenVerseSBT.mint(
-            msg.sender, msg.value, organizations[orgId].wallet, _paymentTypeToString(paymentType), subType
+            msg.sender, tokenURI, msg.value, organizations[orgId].wallet, _paymentTypeToString(paymentType), subType
         );
 
         emit PaymentReceived(msg.sender, organizations[orgId].wallet, msg.value, paymentType, subType, note);
