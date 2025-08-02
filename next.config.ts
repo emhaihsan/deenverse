@@ -1,10 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    domains: ['equran.id', 'lazismuorg.sgp1.digitaloceanspaces.com', 'upload.wikimedia.org'],
-  }
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'equran.id',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lazismuorg.sgp1.digitaloceanspaces.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

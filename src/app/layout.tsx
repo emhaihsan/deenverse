@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description:
     "Platform digital untuk mempermudah ibadah dan memperdalam pemahaman agama Islam",
   icons: {
-    icon: "/deenverse-logo.ico",
+    icon: "/DeenVerse-Green.ico",
   },
 };
 
