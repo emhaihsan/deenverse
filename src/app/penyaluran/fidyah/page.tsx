@@ -1,14 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Wheat,
-  Wallet,
-  Info,
-  Calculator,
-  Heart,
-} from "lucide-react";
+import { Wallet, Calculator, Heart } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -18,6 +10,9 @@ import {
   getEthereumPrice,
 } from "@/lib/api/cryptoPrice";
 import organizations from "@/data/destinationOrg";
+import FidyahHeaders from "@/components/penyaluran/fidyah/FidyahHeaders";
+import FidyahEdu from "@/components/penyaluran/fidyah/FidyahEdu";
+import OrganizationSelection from "@/components/penyaluran/OrganizationSelection";
 
 export default function FidyahPenyaluranPage() {
   const { isConnected } = useAccount();
@@ -87,111 +82,33 @@ export default function FidyahPenyaluranPage() {
   };
 
   return (
-    <div className="bg-gray-50 py-8 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Back Navigation */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/penyaluran"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Kembali ke Penyaluran</span>
-          </Link>
-        </div>
-
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="p-3 bg-amber-50 rounded-2xl">
-              <Wheat className="w-8 h-8 text-amber-600" />
-            </div>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-            Pembayaran Fidyah
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
-            Bayar fidyah puasa Anda secara transparan dan aman menggunakan
-            teknologi blockchain
-          </p>
-        </div>
-
-        {/* Educational Section */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-start gap-4 mb-4">
-            <Info className="w-6 h-6 text-amber-600 mt-1 flex-shrink-0" />
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-3">
-                Tentang Fidyah
-              </h2>
-              <div className="text-gray-600 space-y-3 text-sm">
-                <p>
-                  <strong>Fidyah</strong> adalah denda yang wajib dibayar oleh
-                  seseorang yang tidak dapat melaksanakan puasa Ramadhan karena
-                  alasan syar&apos;i yang permanen, seperti:
-                </p>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Orang tua yang sudah sangat lemah</li>
-                  <li>Orang sakit yang tidak ada harapan sembuh</li>
-                  <li>
-                    Ibu hamil atau menyusui yang khawatir pada dirinya atau
-                    bayinya
-                  </li>
-                </ul>
-                <p>
-                  <strong>Besaran fidyah:</strong> 1 mud (sekitar 650 gram)
-                  makanan pokok per hari puasa yang tidak dapat dilaksanakan.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <FidyahHeaders />
+        <FidyahEdu />
 
         {/* Organization Selection */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Heart className="w-6 h-6 text-amber-600" />
-            <h2 className="text-xl font-medium text-gray-900">
-              Pilih Lembaga Penyalur
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {organizations.map((org) => (
-              <div
-                key={org.id}
-                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedOrg === org.id
-                    ? "border-amber-500 bg-amber-50"
-                    : "border-gray-200 hover:border-amber-300"
-                }`}
-                onClick={() => setSelectedOrg(org.id)}
-              >
-                <div className="relative h-16 mb-2">
-                  <Image
-                    src={org.logo}
-                    alt={org.name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <p className="text-center font-medium mt-2">{org.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <OrganizationSelection
+          organizations={organizations}
+          selectedOrg={selectedOrg}
+          onSelectOrg={setSelectedOrg}
+          theme={{
+            icon: <Heart className="w-6 h-6 text-[#03533d]" />,
+            title: "Pilih Lembaga Penyalur",
+            selectedClass:
+              "border-[#03533d] bg-emerald-50 ring-2 ring-[#03533d]",
+            hoverClass: "hover:border-[#03533d]",
+          }}
+        />
 
         {/* Fidyah Calculator */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Calculator className="w-6 h-6 text-amber-600" />
+            <Calculator className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Kalkulator Fidyah
             </h2>
           </div>
-          <p className="text-gray-600 mb-6">
-            Hitung jumlah fidyah yang perlu Anda bayar
-          </p>
-
           <div className="space-y-6">
             {/* Days Selection */}
             <div>
@@ -205,7 +122,7 @@ export default function FidyahPenyaluranPage() {
                     onClick={() => setDaysCount(days)}
                     className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                       daysCount === days
-                        ? "bg-amber-600 text-white"
+                        ? "bg-[#03533d] text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
@@ -223,7 +140,7 @@ export default function FidyahPenyaluranPage() {
                   value={daysCount || ""}
                   onChange={(e) => setDaysCount(parseInt(e.target.value) || 0)}
                   placeholder="Masukkan jumlah hari"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 border-2"
                 />
               </div>
             </div>
@@ -239,42 +156,42 @@ export default function FidyahPenyaluranPage() {
                 value={ricePrice || ""}
                 onChange={(e) => setRicePrice(parseInt(e.target.value) || 0)}
                 placeholder="Masukkan harga beras per kg"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                className="w-full px-3 py-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 border-2"
               />
             </div>
 
             {/* Calculation Result */}
-            <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+            <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Jumlah Hari:</span>
-                  <span className="font-medium text-amber-700">
+                  <span className="font-medium text-[#03533d]">
                     {daysCount} hari
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Total Beras:</span>
-                  <span className="font-medium text-amber-700">
+                  <span className="font-medium text-[#03533d]">
                     {totalAmount.toFixed(2)} kg
                   </span>
                 </div>
-                <div className="flex justify-between items-center pt-2 border-t border-amber-200">
+                <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
                   <span className="text-gray-700 font-medium">
                     Total Biaya:
                   </span>
-                  <span className="text-lg font-semibold text-amber-600">
+                  <span className="text-lg font-semibold text-[#03533d]">
                     {formatCurrency(totalCost)}
                   </span>
                 </div>
                 {/* ETH Conversion */}
                 {totalCost > 0 && (
-                  <div className="flex justify-between items-center pt-2 border-t border-amber-200">
+                  <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
                     <span className="text-gray-700">Jumlah dalam ETH:</span>
                     <div className="flex items-center">
                       {isLoadingEth ? (
-                        <div className="h-4 w-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mr-2" />
+                        <div className="h-4 w-4 border-2 border-[#03533d] border-t-transparent rounded-full animate-spin mr-2" />
                       ) : (
-                        <span className="font-medium text-purple-600">
+                        <span className="font-medium text-[#03533d]">
                           {ethAmount} ETH
                         </span>
                       )}
@@ -284,7 +201,7 @@ export default function FidyahPenyaluranPage() {
                 {ethPrice > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Kurs:</span>
-                    <span className="font-medium text-amber-700">
+                    <span className="font-medium text-[#03533d]">
                       1 ETH = {formatCurrency(ethPrice)}
                     </span>
                   </div>
@@ -295,9 +212,9 @@ export default function FidyahPenyaluranPage() {
         </div>
 
         {/* Payment Section */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Heart className="w-6 h-6 text-amber-600" />
+            <Wallet className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Pembayaran Fidyah
             </h2>
@@ -327,9 +244,9 @@ export default function FidyahPenyaluranPage() {
           {/* Payment Button */}
           <button
             disabled={!isConnected || daysCount === 0 || !selectedOrg}
-            className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 ${
-              isConnected && daysCount > 0 && selectedOrg
-                ? "bg-amber-600 hover:bg-amber-700 text-white"
+            className={`w-full py-3 px-4 rounded-xl mb-4 font-medium flex items-center justify-center gap-2 transition-all ${
+              !(!isConnected || daysCount === 0 || !selectedOrg)
+                ? "bg-[#03533d] hover:bg-gray-900 text-white border border-b-4 border-gray-900"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
           >

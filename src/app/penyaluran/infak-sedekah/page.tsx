@@ -23,6 +23,7 @@ import Image from "next/image";
 import organizations from "@/data/destinationOrg";
 import InfakHeaders from "@/components/penyaluran/infak/InfakHeaders";
 import InfakEdu from "@/components/penyaluran/infak/InfakEdu";
+import OrganizationSelection from "@/components/penyaluran/OrganizationSelection";
 
 export default function InfakSedekahPenyaluranPage() {
   const { isConnected, address } = useAccount();
@@ -168,37 +169,18 @@ export default function InfakSedekahPenyaluranPage() {
 
         <InfakEdu />
         {/* Organization Selection */}
-        <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <HandCoins className="w-6 h-6 text-[#03533d]" />
-            <h2 className="text-xl font-medium text-gray-900">
-              Pilih Lembaga Penyalur
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {organizations.map((org) => (
-              <div
-                key={org.id}
-                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedOrg === org.id
-                    ? "border-[#03533d] bg-emerald-50"
-                    : "border-gray-200 hover:border-emerald-700"
-                }`}
-                onClick={() => setSelectedOrg(org.id)}
-              >
-                <div className="relative h-16 mb-2">
-                  <Image
-                    src={org.logo}
-                    alt={org.name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <p className="text-center font-medium mt-2">{org.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <OrganizationSelection
+          organizations={organizations}
+          selectedOrg={selectedOrg}
+          onSelectOrg={setSelectedOrg}
+          theme={{
+            icon: <HandCoins className="w-6 h-6 text-[#03533d]" />,
+            title: "Pilih Lembaga Penyaluran",
+            selectedClass:
+              "border-[#03533d] bg-emerald-50 ring-2 ring-[#03533d]",
+            hoverClass: "hover:border-[#03533d]",
+          }}
+        />
 
         {/* Amount Selection */}
         <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">

@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Heart } from "lucide-react";
+import { ArrowLeft, Wheat } from "lucide-react";
 
-export default function InfakHeaders() {
+export default function FidyahHeaders() {
   return (
     <>
       <div className="flex items-center">
@@ -17,14 +16,14 @@ export default function InfakHeaders() {
       <div className="bg-[#03533d] text-white rounded-xl overflow-hidden border-b-6 border-gray-900 p-6">
         <div className="flex flex-col items-center text-center">
           <div className="p-3 bg-white/20 rounded-2xl mb-4">
-            <Heart className="w-8 h-8 text-white" />
+            <Wheat className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Penyaluran Infaq & Sedekah
+            Pembayaran Fidyah
           </h1>
           <p className="text-emerald-100 text-lg max-w-2xl">
-            Salurkan infaq dan sedekah Anda secara transparan dan aman
-            menggunakan teknologi blockchain
+            Laksanakan kewajiban fidyah Anda dengan mudah, aman, dan transparan
+            melalui blockchain.
           </p>
         </div>
       </div>
