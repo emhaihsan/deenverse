@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Sheet,
-  Calculator,
-  Wallet,
-  Info,
-  Heart,
-} from "lucide-react";
+import { ArrowLeft, Sheet, Calculator, Wallet, Info } from "lucide-react";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 import {

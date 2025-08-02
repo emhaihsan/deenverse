@@ -163,8 +163,12 @@ export async function POST(req: NextRequest) {
 
     // 5. Return the tokenURI
     return NextResponse.json({ tokenURI }, { status: 200 });
-  } catch (e: any) {
-    console.error("Error generating certificate NFT:", e.message);
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error("Error generating certificate NFT:", e.message);
+    } else {
+      console.error("Error generating certificate NFT:", e);
+    }
     return NextResponse.json(
       { error: "Failed to generate certificate NFT" },
       { status: 500 }

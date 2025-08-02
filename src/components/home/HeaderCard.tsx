@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { AdhanService } from "@/lib/adhan";
 import { Coordinates } from "adhan";
-import { Loader2, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 // Fungsi untuk format tanggal Hijriah
 const formatHijri = (date: Date) => {

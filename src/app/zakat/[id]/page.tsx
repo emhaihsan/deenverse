@@ -5,14 +5,23 @@ import { zakatTypes } from "@/data/zakatData";
 import { ArrowLeft } from "lucide-react";
 import ZakatDetailContent from "@/components/zakat/ZakatDetailContent";
 
-interface ZakatDetailPageProps {
-  params: {
-    id: string;
-  };
+// Sesuai format Next.js App Router
+export interface ZakatDetailPageProps {
+  params: Promise<{ id: string }>;
 }
 
-export default function ZakatDetailPage({ params }: ZakatDetailPageProps) {
-  const zakat = zakatTypes.find((z) => z.id === params.id);
+// Pre-generate semua path zakat
+export async function generateStaticParams() {
+  return zakatTypes.map((z) => ({
+    id: z.id,
+  }));
+}
+
+export default async function ZakatDetailPage({
+  params,
+}: ZakatDetailPageProps) {
+  const { id } = await params; // await karena params adalah Promise
+  const zakat = zakatTypes.find((z) => z.id === id);
 
   if (!zakat) {
     notFound();

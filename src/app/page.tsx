@@ -1,6 +1,5 @@
 // app/page.tsx
 import HeaderCard from "@/components/home/HeaderCard";
-import FeatureCard from "@/components/home/FeatureCard";
 import DailyAyat from "@/components/home/DailyAyat";
 import DailyHadis from "@/components/home/DailyHadis";
 import Link from "next/link";

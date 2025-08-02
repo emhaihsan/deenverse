@@ -2,13 +2,7 @@
 import ZakatEducationList from "@/components/zakat/ZakatEducationList";
 import Link from "next/link";
 import Header from "@/components/zakat/Header";
-import {
-  BookOpen,
-  Heart,
-  HandCoins,
-  Scale,
-  HeartHandshake,
-} from "lucide-react";
+import { Heart, HandCoins, Scale, HeartHandshake } from "lucide-react";
 
 export default function ZakatPage() {
   return (

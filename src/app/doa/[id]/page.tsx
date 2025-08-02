@@ -1,26 +1,67 @@
-// app/doa/[id]/page.tsx
-import { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { getDoaById } from "@/lib/api/doa";
 import BackButton from "@/components/ui/BackButton";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
-  const { data: doa } = await getDoaById(parseInt(params.id));
-  return {
-    title: `${doa.nama} - Kumpulan Doa`,
-    description: doa.idn,
-  };
+interface Doa {
+  id: number;
+  nama: string;
+  idn: string;
+  grup: string;
+  ar: string;
+  tr: string;
+  tag?: string[];
+  tentang?: string;
 }
 
-export default async function DoaDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { data: doa } = await getDoaById(parseInt(params.id));
+export default function DoaDetailPage() {
+  const params = useParams();
+  const [doa, setDoa] = useState<Doa | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDoa = async () => {
+      try {
+        const { data } = await getDoaById(parseInt(params.id as string));
+        setDoa(data);
+      } catch (error) {
+        console.error("Error fetching doa:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchDoa();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 max-w-3xl">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!doa) {
+    return (
+      <div className="container mx-auto p-4 max-w-3xl">
+        <div className="text-center py-12">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Doa tidak ditemukan
+          </h2>
+          <p className="text-gray-600 mt-2">
+            Mohon maaf, doa yang Anda cari tidak dapat ditemukan.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
@@ -51,11 +92,11 @@ export default async function DoaDetailPage({
             </div>
           )}
 
-          {doa.tag?.length > 0 && (
+          {doa.tag?.length && (
             <div className="mt-6 pt-4 border-t border-gray-200">
               <h3 className="text-sm font-medium text-gray-500 mb-2">Tags:</h3>
               <div className="flex flex-wrap gap-2">
-                {doa.tag.map((tag) => (
+                {doa.tag?.map((tag) => (
                   <span
                     key={tag}
                     className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"

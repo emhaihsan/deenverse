@@ -38,7 +38,7 @@ export default function ZakatDetailContent({ zakat }: ZakatDetailContentProps) {
           {zakat.dalil.quran && (
             <div>
               <div className="text-sm text-emerald-600 font-medium mb-2">
-                Al-Qur'an
+                Al-Qur&apos;an
               </div>
               {zakat.dalil.quran.map((ayat, index) => (
                 <div key={index} className="bg-emerald-50 p-4 rounded-xl">

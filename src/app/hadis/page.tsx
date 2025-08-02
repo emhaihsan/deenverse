@@ -283,7 +283,7 @@ export default function HadisPage() {
             </h3>
             <p className="text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Hadis adalah perkataan, perbuatan, dan persetujuan Nabi Muhammad
-              SAW yang menjadi sumber hukum Islam kedua setelah Al-Qur'an.
+              SAW yang menjadi sumber hukum Islam kedua setelah Al-Qur&apos;an.
               Koleksi hadis ini dikumpulkan dari kitab-kitab hadis yang telah
               diverifikasi keasliannya oleh para ulama hadis.
             </p>

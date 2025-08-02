@@ -4,10 +4,11 @@ import {
     CalculationMethod,
     PrayerTimes,
     Prayer,
+    CalculationParameters
   } from "adhan";
   
   export class AdhanService {
-    private params: any;
+    private params: CalculationParameters;
   
     constructor() {
       this.params = CalculationMethod.MuslimWorldLeague();

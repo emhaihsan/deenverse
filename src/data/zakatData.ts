@@ -699,3 +699,37 @@ export const zakatTypes: ZakatType[] = [
     sources: ["Fiqh Az-Zakat - Yusuf Qardhawi", "Fatwa MUI No. 3 Tahun 2003"]
   }
 ];
+
+
+export const zakatTypesEmas = [
+  {
+    id: "perdagangan",
+    name: "Zakat Perdagangan",
+    description: "Modal dan keuntungan usaha dagang",
+  },
+  {
+    id: "perusahaan",
+    name: "Zakat Perusahaan",
+    description: "Aset dan keuntungan perusahaan",
+  },
+  {
+    id: "properti",
+    name: "Zakat Properti",
+    description: "Properti yang menghasilkan pendapatan",
+  },
+  {
+    id: "profesi",
+    name: "Zakat Profesi",
+    description: "Gaji, honor, fee freelance",
+  },
+  {
+    id: "emas-perak",
+    name: "Zakat Simpanan Emas/Perak",
+    description: "Emas, perak, dan perhiasan",
+  },
+  {
+    id: "investasi",
+    name: "Zakat Investasi",
+    description: "Saham, reksa dana, crypto, obligasi",
+  },
+];

@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Wheat,
-  Calculator,
-  Wallet,
-  Info,
-  Heart,
-} from "lucide-react";
+import { Wheat, Wallet, Info, Heart } from "lucide-react";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 import {

@@ -1,57 +1,23 @@
 "use client";
 
+import { useCallback } from "react";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   Coins,
   Calculator,
-  Zap,
   Wallet,
   Info,
   DollarSign,
-  AlertCircle,
   RefreshCw,
-  Users,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { getCurrentGoldPrice, getNisabAmount } from "@/lib/api/goldPrice";
 import { convertIdrToEth, formatEth } from "@/lib/api/cryptoPrice";
 import organizations from "@/data/destinationOrg";
 import Image from "next/image";
-
-const zakatTypesEmas = [
-  {
-    id: "perdagangan",
-    name: "Zakat Perdagangan",
-    description: "Modal dan keuntungan usaha dagang",
-  },
-  {
-    id: "perusahaan",
-    name: "Zakat Perusahaan",
-    description: "Aset dan keuntungan perusahaan",
-  },
-  {
-    id: "properti",
-    name: "Zakat Properti",
-    description: "Properti yang menghasilkan pendapatan",
-  },
-  {
-    id: "profesi",
-    name: "Zakat Profesi",
-    description: "Gaji, honor, fee freelance",
-  },
-  {
-    id: "emas-perak",
-    name: "Zakat Simpanan Emas/Perak",
-    description: "Emas, perak, dan perhiasan",
-  },
-  {
-    id: "investasi",
-    name: "Zakat Investasi",
-    description: "Saham, reksa dana, crypto, obligasi",
-  },
-];
 
 export default function NisabEmasPage() {
   const [goldPrice, setGoldPrice] = useState<number | null>(null);
@@ -95,7 +61,7 @@ export default function NisabEmasPage() {
   }, []);
 
   // Calculate zakat based on simple input with minimum 2.5% of nisab
-  const calculateSimpleZakat = () => {
+  const calculateSimpleZakat = useCallback(() => {
     const amount = parseFloat(simpleAmount) || 0;
     const minimumZakat = nishab * 0.025; // 2.5% of nisab
 
@@ -105,7 +71,7 @@ export default function NisabEmasPage() {
     }
 
     return amount;
-  };
+  }, [simpleAmount, nishab]);
 
   // Convert IDR to ETH
   const convertToEth = async (amount: number) => {
@@ -130,7 +96,7 @@ export default function NisabEmasPage() {
   useEffect(() => {
     const amount = calculateSimpleZakat();
     convertToEth(amount);
-  }, [simpleAmount, nishab]);
+  }, [calculateSimpleZakat]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {

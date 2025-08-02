@@ -92,7 +92,7 @@ export default function QuranPage() {
 
     // Page number buttons
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -161,8 +161,12 @@ export default function QuranPage() {
               <BookOpen className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Al-Qur'an</h1>
-              <p className="text-gray-600">Bacalah Al-Qur'an dengan khusyuk</p>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Al-Qur&apos;an
+              </h1>
+              <p className="text-gray-600">
+                Bacalah Al-Qur&apos;an dengan khusyuk
+              </p>
             </div>
           </div>
 

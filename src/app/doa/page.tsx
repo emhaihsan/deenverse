@@ -16,7 +16,7 @@ export default function DoaPage() {
           Kumpulan Doa & Dzikir
         </h1>
         <p className="text-gray-600">
-          Temukan doa-doa pilihan berdasarkan Al-Qur'an dan Hadits shahih
+          Temukan doa-doa pilihan berdasarkan Al-Qur&apos;an dan Hadits shahih
         </p>
       </div>
 

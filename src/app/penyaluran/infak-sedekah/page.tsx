@@ -10,7 +10,7 @@ import {
   deenVerseDistributionAddress,
 } from "@/lib/blockchain";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal, CheckCircle, XCircle, Loader } from "lucide-react";
+import { CheckCircle, XCircle, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -154,11 +154,16 @@ export default function InfakSedekahPenyaluranPage() {
         ],
         value: parseEther(ethAmount as `${number}`),
       });
-    } catch (err: any) {
-      console.error("Submission error:", err);
-      setError(
-        err.message || "Terjadi kesalahan saat memproses permintaan Anda"
-      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Submission error:", err.message);
+        setError(
+          err.message || "Terjadi kesalahan saat memproses permintaan Anda"
+        );
+      } else {
+        console.error("Submission error:", err);
+        setError("Terjadi kesalahan saat memproses permintaan Anda");
+      }
       setStatusMessage("");
     }
   };

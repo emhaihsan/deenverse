@@ -1,14 +1,5 @@
 import Link from "next/link";
-import {
-  BookOpen,
-  HandHelping,
-  Home,
-  Sparkles,
-  Github,
-  Twitter,
-  Mail,
-  Heart,
-} from "lucide-react";
+import { Sparkles, Github, Twitter, Mail, Heart } from "lucide-react";
 
 export default function Footer() {
   const navigation = {
@@ -59,8 +50,8 @@ export default function Footer() {
             </div>
             <p className="text-gray-400 text-base max-w-md">
               Platform digital untuk mempermudah ibadah dan memperdalam
-              pemahaman agama Islam. Dilengkapi dengan Al-Qur'an, kumpulan doa,
-              dan fitur pembelajaran interaktif.
+              pemahaman agama Islam. Dilengkapi dengan Al-Qur&apos;an, kumpulan
+              doa, dan fitur pembelajaran interaktif.
             </p>
             <div className="flex space-x-6">
               {navigation.social.map((item) => {

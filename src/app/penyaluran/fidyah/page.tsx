@@ -128,7 +128,7 @@ export default function FidyahPenyaluranPage() {
                 <p>
                   <strong>Fidyah</strong> adalah denda yang wajib dibayar oleh
                   seseorang yang tidak dapat melaksanakan puasa Ramadhan karena
-                  alasan syar'i yang permanen, seperti:
+                  alasan syar&apos;i yang permanen, seperti:
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Orang tua yang sudah sangat lemah</li>
