@@ -1,77 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Scale,
-  Coins,
-  Wheat,
-  Sheet,
-  Heart,
-  Info,
-} from "lucide-react";
-
-const nisabCategories = [
-  {
-    id: "emas",
-    title: "Nisab Emas",
-    subtitle: "85 gram emas (± Rp 110-115 juta)",
-    description: "Semua harta likuid dan aset yang nilainya setara uang",
-    icon: Coins,
-    color: "bg-yellow-50 border-yellow-200 text-yellow-800",
-    iconColor: "text-yellow-600",
-    kadar: "2,5%",
-    haul: "1 tahun",
-    zakatTypes: [
-      "Zakat Perdagangan",
-      "Zakat Perusahaan",
-      "Zakat Properti",
-      "Zakat Profesi",
-      "Zakat Simpanan Emas/Perak/Perhiasan",
-      "Zakat Investasi",
-    ],
-  },
-  {
-    id: "pertanian",
-    title: "Nisab Pertanian",
-    subtitle: "653 kg gabah ≈ 520 kg beras",
-    description: "Hasil bumi dan produksi pertanian/perikanan",
-    icon: Wheat,
-    color: "bg-green-50 border-green-200 text-green-800",
-    iconColor: "text-green-600",
-    kadar: "5% / 10%",
-    haul: "Setiap panen",
-    zakatTypes: [
-      "Zakat Tanaman Pangan",
-      "Zakat Tanaman Produktif",
-      "Zakat Tambak",
-    ],
-  },
-  {
-    id: "peternakan",
-    title: "Nisab Peternakan",
-    subtitle: "Kambing: 40 ekor • Sapi: 30 ekor • Unta: 5 ekor",
-    description: "Ternak yang dipelihara untuk dikembangbiakkan",
-    icon: Sheet,
-    color: "bg-amber-50 border-amber-200 text-amber-800",
-    iconColor: "text-amber-600",
-    kadar: "Bervariasi",
-    haul: "1 tahun",
-    zakatTypes: ["Zakat Peternakan"],
-  },
-  {
-    id: "fitrah",
-    title: "Zakat Fitrah",
-    subtitle: "Tidak ada nisab",
-    description: "Wajib bagi setiap Muslim menjelang Idul Fitri",
-    icon: Heart,
-    color: "bg-rose-50 border-rose-200 text-rose-800",
-    iconColor: "text-rose-600",
-    kadar: "2,5 kg beras/orang",
-    haul: "Setiap Ramadan",
-    zakatTypes: ["Zakat Fitrah"],
-  },
-];
+import { ArrowLeft, Scale, Info } from "lucide-react";
+import nisabCategories from "@/data/nishabCategories";
 
 export default function ZakatPenyaluranPage() {
   return (
@@ -89,22 +20,22 @@ export default function ZakatPenyaluranPage() {
         </div>
 
         {/* Header */}
-        <div className="text-center">
+        <div className="bg-[#03533d] text-white rounded-xl overflow-hidden border-b-6 border-gray-900 p-6 text-center">
           <div className="flex items-center justify-center mb-4">
             <div className="p-3 bg-emerald-50 rounded-2xl">
               <Scale className="w-8 h-8 text-emerald-600" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-light text-white mb-4">
             Penyaluran Zakat
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
+          <p className="text-lg text-gray-50 max-w-3xl mx-auto font-light leading-relaxed">
             Pilih kategori zakat berdasarkan nisab yang sesuai dengan harta Anda
           </p>
         </div>
 
         {/* Information Section */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-gray-100 rounded-2xl  border  border-b-6 border-gray-900 p-6">
           <div className="flex items-start gap-4">
             <Info className="w-6 h-6 text-emerald-600 mt-1 flex-shrink-0" />
             <div>
@@ -126,49 +57,55 @@ export default function ZakatPenyaluranPage() {
           {nisabCategories.map((category) => {
             const IconComponent = category.icon;
             return (
-              <Link key={category.id} href={`/penyaluran/zakat/${category.id}`}>
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group h-full">
+              <Link
+                key={category.id}
+                href={`/penyaluran/zakat/${category.id}`}
+                className="group"
+              >
+                <div className="bg-white rounded-2xl border-b-4 border-gray-900 p-6 group-hover:border-[#03533d] group-hover:border-b-6 hover:shadow-md transition-all duration-300">
                   {/* Header */}
                   <div className="flex items-start gap-4 mb-4">
                     <div
-                      className={`p-3 rounded-xl ${
+                      className={`p-3 rounded-xl transition-colors duration-300 ${
                         category.color.split(" ")[0]
-                      } ${category.color.split(" ")[1]}`}
+                      } ${
+                        category.color.split(" ")[1]
+                      } group-hover:bg-[#03533d]`}
                     >
                       <IconComponent
-                        className={`w-6 h-6 ${category.iconColor}`}
+                        className={`w-6 h-6 ${category.iconColor} group-hover:text-white transition-colors duration-300`}
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1 transition-colors duration-300 group-hover:text-[#03533d]">
                         {category.title}
                       </h3>
-                      <p className="text-sm text-gray-600 font-medium">
+                      <p className="text-sm text-gray-600 font-medium transition-colors duration-300 group-hover:text-[#03533d]">
                         {category.subtitle}
                       </p>
                     </div>
                   </div>
 
                   {/* Description */}
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed transition-colors duration-300 group-hover:text-[#03533d]">
                     {category.description}
                   </p>
 
                   {/* Zakat Details */}
-                  <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg transition-colors duration-300 group-hover:bg-[#e5f7ef]">
                     <div>
-                      <span className="text-xs text-gray-500 uppercase tracking-wide">
+                      <span className="text-xs text-gray-500 uppercase tracking-wide transition-colors duration-300 group-hover:text-[#03533d]">
                         Kadar Zakat
                       </span>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-900 transition-colors duration-300 group-hover:text-[#03533d]">
                         {category.kadar}
                       </p>
                     </div>
                     <div>
-                      <span className="text-xs text-gray-500 uppercase tracking-wide">
+                      <span className="text-xs text-gray-500 uppercase tracking-wide transition-colors duration-300 group-hover:text-[#03533d]">
                         Haul
                       </span>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-900 transition-colors duration-300 group-hover:text-[#03533d]">
                         {category.haul}
                       </p>
                     </div>
@@ -176,20 +113,20 @@ export default function ZakatPenyaluranPage() {
 
                   {/* Zakat Types */}
                   <div className="mb-4">
-                    <span className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">
+                    <span className="text-xs text-gray-500 uppercase tracking-wide mb-2 block transition-colors duration-300 group-hover:text-[#03533d]">
                       Jenis Zakat ({category.zakatTypes.length})
                     </span>
                     <div className="flex flex-wrap gap-1">
                       {category.zakatTypes.slice(0, 3).map((type, index) => (
                         <span
                           key={index}
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${category.color}`}
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${category.color} transition-colors duration-300 group-hover:bg-[#03533d] group-hover:text-white`}
                         >
                           {type}
                         </span>
                       ))}
                       {category.zakatTypes.length > 3 && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 transition-colors duration-300 group-hover:bg-[#03533d] group-hover:text-white">
                           +{category.zakatTypes.length - 3} lainnya
                         </span>
                       )}
@@ -198,7 +135,7 @@ export default function ZakatPenyaluranPage() {
 
                   {/* Action */}
                   <div className="text-center pt-2 border-t border-gray-100">
-                    <span className="text-sm font-medium text-emerald-600 group-hover:text-emerald-700 transition-colors">
+                    <span className="text-sm font-medium text-gray-900 transition-colors duration-300 group-hover:text-[#03533d]">
                       Pilih Kategori Ini →
                     </span>
                   </div>
@@ -209,7 +146,7 @@ export default function ZakatPenyaluranPage() {
         </div>
 
         {/* Summary Table */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-gray-100 rounded-2xl  border  border-b-6 border-gray-900 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Ringkasan Kategori Nisab
           </h2>

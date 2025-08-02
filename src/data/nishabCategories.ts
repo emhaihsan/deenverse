@@ -1,0 +1,65 @@
+import { Coins, Wheat, Sheet, Heart } from "lucide-react";
+
+const nisabCategories = [
+    {
+      id: "emas",
+      title: "Nisab Emas",
+      subtitle: "85 gram emas (± Rp 110-115 juta)",
+      description: "Semua harta likuid dan aset yang nilainya setara uang",
+      icon: Coins,
+      color: "bg-gray-50 border-gray-200 text-gray-800",
+      iconColor: "text-gray-900",
+      kadar: "2,5%",
+      haul: "1 tahun",
+      zakatTypes: [
+        "Zakat Perdagangan",
+        "Zakat Perusahaan",
+        "Zakat Properti",
+        "Zakat Profesi",
+        "Zakat Simpanan Emas/Perak/Perhiasan",
+        "Zakat Investasi",
+      ],
+    },
+    {
+      id: "pertanian",
+      title: "Nisab Pertanian",
+      subtitle: "653 kg gabah ≈ 520 kg beras",
+      description: "Hasil bumi dan produksi pertanian/perikanan",
+      icon: Wheat,
+      color: "bg-gray-50 border-gray-200 text-gray-800",
+      iconColor: "text-gray-900",
+      kadar: "5% / 10%",
+      haul: "Setiap panen",
+      zakatTypes: [
+        "Zakat Tanaman Pangan",
+        "Zakat Tanaman Produktif",
+        "Zakat Tambak",
+      ],
+    },
+    {
+      id: "peternakan",
+      title: "Nisab Peternakan",
+      subtitle: "Kambing: 40 ekor • Sapi: 30 ekor • Unta: 5 ekor",
+      description: "Ternak yang dipelihara untuk dikembangbiakkan",
+      icon: Sheet,
+      color: "bg-gray-50 border-gray-200 text-gray-800",
+      iconColor: "text-gray-900",
+      kadar: "Bervariasi",
+      haul: "1 tahun",
+      zakatTypes: ["Zakat Peternakan"],
+    },
+    {
+      id: "fitrah",
+      title: "Zakat Fitrah",
+      subtitle: "Tidak ada nisab",
+      description: "Wajib bagi setiap Muslim menjelang Idul Fitri",
+      icon: Heart,
+      color: "bg-gray-50 border-gray-200 text-gray-800",
+      iconColor: "text-gray-900",
+      kadar: "2,5 kg beras/orang",
+      haul: "Setiap Ramadan",
+      zakatTypes: ["Zakat Fitrah"],
+    },
+];
+
+export default nisabCategories;
