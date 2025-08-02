@@ -8,6 +8,6 @@ export interface QurbanAnimal {
     icon: string;
     color: string;
     benefits: string[];
+    image: string;
   }
-
  

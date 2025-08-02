@@ -19,7 +19,6 @@ import {
   formatEth,
   getEthereumPrice,
 } from "@/lib/api/cryptoPrice";
-import Image from "next/image";
 import organizations from "@/data/destinationOrg";
 import InfakHeaders from "@/components/penyaluran/infak/InfakHeaders";
 import InfakEdu from "@/components/penyaluran/infak/InfakEdu";
@@ -34,7 +33,6 @@ export default function InfakSedekahPenyaluranPage() {
   const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
   const [ethPrice, setEthPrice] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [isProcessingApi, setIsProcessingApi] = useState(false);
 
@@ -90,7 +88,6 @@ export default function InfakSedekahPenyaluranPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccessMessage(null);
     setStatusMessage("");
 
     if (!isConnected || !address) {

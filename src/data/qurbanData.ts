@@ -15,6 +15,7 @@ const qurbanAnimals: QurbanAnimal[] = [
         "Daging berkualitas tinggi",
         "Mudah didistribusi",
       ],
+      image: "",
     },
     {
       id: "cow",
@@ -30,6 +31,7 @@ const qurbanAnimals: QurbanAnimal[] = [
         "Daging melimpah",
         "Ekonomis untuk grup",
       ],
+      image: "",
     },
     {
       id: "camel",
@@ -45,6 +47,7 @@ const qurbanAnimals: QurbanAnimal[] = [
         "Pahala berlimpah",
         "Tradisi Nabi",
       ],
+      image: "",
     },
   ];
 

@@ -3,7 +3,6 @@
 import { Wallet, Calculator, Heart } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import {
   convertIdrToEth,
   formatEth,

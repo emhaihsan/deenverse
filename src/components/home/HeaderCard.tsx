@@ -222,15 +222,6 @@ export default function HeaderCard() {
               {/* Hijriah: Indonesia dan Arab */}
               <span>
                 {(() => {
-                  const idFormatter = new Intl.DateTimeFormat(
-                    "id-u-ca-islamic",
-                    {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }
-                  );
-
                   const hijriFormatter = new Intl.DateTimeFormat(
                     "en-TN-u-ca-islamic",
                     {
