@@ -122,9 +122,7 @@ export default function Home() {
                 <div
                   className={`bg-gray-50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 text-center border-b-6 ${feature.color} group`}
                 >
-                  <div
-                    className={`p-4 ${feature.bgColor} rounded-full w-30 h-30 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform`}
-                  >
+                  <div className="p-4 rounded-full w-30 h-30 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <div className={feature.iconColor}>{feature.icon}</div>
                   </div>
                   <h3 className="text-xl font-bold text-[#03533d] duration-300 ">
@@ -175,7 +173,7 @@ export default function Home() {
           </p>
           <Link
             href="/penyaluran"
-            className="inline-flex items-center gap-2 bg-white text-[#03533d] px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
+            className="inline-flex border-b-4 border-gray-900 items-center gap-2 bg-white text-[#03533d] px-6 py-3 rounded-lg font-bold hover:bg-gray-900 hover:text-white transition-colors"
           >
             Mulai Penyaluran
           </Link>

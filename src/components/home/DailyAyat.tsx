@@ -27,7 +27,7 @@ export default function DailyAyat() {
   // Loading
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center border-b-2 border-gray-300 animate-pulse">
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900 animate-pulse">
         <div className="flex flex-col items-center gap-3 mb-4">
           <div className="h-5 bg-gray-200 rounded w-28"></div>
         </div>
@@ -42,7 +42,7 @@ export default function DailyAyat() {
   // Error
   if (!dailyAyat) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center border-b-2 border-gray-300">
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center border-b-6 border-gray-900">
         <div className="flex flex-col items-center gap-3 mb-4">
           <h2 className="text-xl font-semibold text-gray-800 text-center">
             One Day One Ayat
@@ -57,7 +57,7 @@ export default function DailyAyat() {
 
   // Success
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 border-b-2 border-gray transition-shadow text-center">
+    <div className="bg-white rounded-2xl shadow-lg p-8 border-b-6 border-gray-900 transition-shadow text-center">
       {/* Header */}
       <div className="flex flex-col items-center gap-3 mb-5">
         <h2 className="text-xl font-semibold text-gray-800 text-center">

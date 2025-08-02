@@ -44,7 +44,7 @@ export default function DailyHadis() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow p-8 text-center border-b group animate-pulse">
+      <div className="bg-white rounded-2xl shadow p-8 text-center group border-b-6 border-gray-900 animate-pulse">
         <div className="flex flex-col items-center gap-3 mb-4">
           <h2 className="text-xl font-semibold text-gray-800 text-center">
             One Day One Hadis
@@ -60,7 +60,7 @@ export default function DailyHadis() {
 
   if (!hadis) {
     return (
-      <div className="bg-white rounded-2xl shadow p-8 text-center border-b group">
+      <div className="bg-white rounded-2xl shadow p-8 text-center group border-b-6 border-gray-900">
         <div className="flex flex-col items-center gap-3 mb-6">
           <h2 className="text-xl font-semibold text-gray-800 text-center">
             One Day One Hadis
@@ -74,7 +74,7 @@ export default function DailyHadis() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow p-8 text-center border-b group hover:shadow-lg transition-shadow">
+    <div className="bg-white rounded-2xl shadow p-8 text-center group border-b-6 border-gray-900 transition-shadow">
       <div className="flex flex-col items-center justify-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 text-center">
           One Day One Hadis
@@ -104,7 +104,7 @@ export default function DailyHadis() {
         <div className="pt-2">
           <a
             href={`/hadis/${hadis.data.id}/${hadis.data.contents.number}`}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
+            className="inline-flex items-center gap-2 border-b-4 border-gray-900 px-4 py-2 bg-[#03533d] hover:bg-gray-900 hover:text-white text-white rounded-lg font-semibold shadow transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
             role="button"
             aria-label="Baca Selengkapnya tentang hadis"
           >

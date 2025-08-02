@@ -168,39 +168,39 @@ export default function InfakSedekahPenyaluranPage() {
   };
 
   return (
-    <div className="bg-gray-50 py-8 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Back Navigation */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center">
           <Link
             href="/penyaluran"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-gray-900 hover:text-[#03533d] transition-colors font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Kembali ke Penyaluran</span>
+            <span>Kembali ke Penyaluran</span>
           </Link>
         </div>
 
         {/* Header */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="p-3 bg-blue-50 rounded-2xl">
-              <Heart className="w-8 h-8 text-blue-600" />
+        <div className="bg-[#03533d] text-white rounded-xl overflow-hidden border-b-6 border-gray-900 p-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="p-3 bg-white/20 rounded-2xl mb-4">
+              <Heart className="w-8 h-8 text-white" />
             </div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">
+              Penyaluran Infaq & Sedekah
+            </h1>
+            <p className="text-emerald-100 text-lg max-w-2xl">
+              Salurkan infaq dan sedekah Anda secara transparan dan aman
+              menggunakan teknologi blockchain
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-            Penyaluran Infaq & Sedekah
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
-            Salurkan infaq dan sedekah Anda secara transparan dan aman
-            menggunakan teknologi blockchain
-          </p>
         </div>
 
         {/* Educational Section */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-gray-100 rounded-2xl border border-b-6 border-gray-900 p-6">
           <div className="flex items-start gap-4 mb-4">
-            <Info className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+            <Info className="w-6 h-6 text-[#03533d] mt-1 flex-shrink-0" />
             <div>
               <h2 className="text-lg font-medium text-gray-900 mb-3">
                 Tentang Infak & Sedekah
@@ -228,9 +228,9 @@ export default function InfakSedekahPenyaluranPage() {
         </div>
 
         {/* Organization Selection */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <HandCoins className="w-6 h-6 text-blue-600" />
+            <HandCoins className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Pilih Lembaga Penyalur
             </h2>
@@ -241,8 +241,8 @@ export default function InfakSedekahPenyaluranPage() {
                 key={org.id}
                 className={`border rounded-lg p-4 cursor-pointer transition-colors ${
                   selectedOrg === org.id
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-300"
+                    ? "border-[#03533d] bg-emerald-50"
+                    : "border-gray-200 hover:border-emerald-700"
                 }`}
                 onClick={() => setSelectedOrg(org.id)}
               >
@@ -261,9 +261,9 @@ export default function InfakSedekahPenyaluranPage() {
         </div>
 
         {/* Amount Selection */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <HandCoins className="w-6 h-6 text-blue-600" />
+            <HandCoins className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Jumlah Penyaluran
             </h2>
@@ -281,7 +281,7 @@ export default function InfakSedekahPenyaluranPage() {
                   onClick={() => setAmount(presetAmount)}
                   className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                     amount === presetAmount
-                      ? "bg-blue-600 text-white"
+                      ? "bg-emerald-600 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
@@ -301,17 +301,17 @@ export default function InfakSedekahPenyaluranPage() {
               value={amount || ""}
               onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="Masukkan jumlah (IDR)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
           </div>
 
           {/* ETH Conversion */}
           {amount > 0 && (
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mt-4">
+            <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200 mt-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Jumlah (IDR):</span>
-                  <span className="font-medium text-blue-700">
+                  <span className="font-medium text-[#03533d]">
                     {formatCurrency(amount)}
                   </span>
                 </div>
@@ -319,17 +319,17 @@ export default function InfakSedekahPenyaluranPage() {
                   <span className="text-gray-700">Jumlah dalam ETH:</span>
                   <div className="flex items-center">
                     {isLoadingEth ? (
-                      <div className="h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2" />
+                      <div className="h-4 w-4 border-2 border-[#03533d] border-t-transparent rounded-full animate-spin mr-2" />
                     ) : (
-                      <span className="font-medium text-purple-600">
+                      <span className="font-medium text-[#03533d]">
                         {ethAmount} ETH
                       </span>
                     )}
                   </div>
                 </div>
-                <div className="flex justify-between items-center pt-2 border-t border-blue-200">
+                <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
                   <span className="text-gray-700">Kurs:</span>
-                  <span className="font-medium text-blue-700">
+                  <span className="font-medium text-[#03533d]">
                     1 ETH = {formatCurrency(ethPrice)}
                   </span>
                 </div>
@@ -339,9 +339,9 @@ export default function InfakSedekahPenyaluranPage() {
         </div>
 
         {/* Description */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Info className="w-6 h-6 text-blue-600" />
+            <Info className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Catatan (Opsional)
             </h2>
@@ -356,9 +356,9 @@ export default function InfakSedekahPenyaluranPage() {
         </div>
 
         {/* Payment Section */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Wallet className="w-6 h-6 text-blue-600" />
+            <Wallet className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Konfirmasi Penyaluran
             </h2>
@@ -404,13 +404,13 @@ export default function InfakSedekahPenyaluranPage() {
               !selectedOrg ||
               isSubmitting
             }
-            className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
+            className={`w-full py-3 px-4 rounded-xl mb-4 font-medium flex items-center justify-center gap-2 transition-all ${
               isConnected &&
               amount > 0 &&
               !isLoadingEth &&
               selectedOrg &&
               !isSubmitting
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                ? "bg-[#03533d] hover:bg-gray-900 text-white hover:text-white border border-b-4 border-gray-900"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
           >
