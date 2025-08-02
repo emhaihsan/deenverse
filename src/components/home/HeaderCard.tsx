@@ -35,35 +35,6 @@ const bulanHijriArab = [
   "ذو الحجة",
 ];
 
-// Fungsi untuk format tanggal Hijriah (Indonesia dan Arab)
-const formatHijri = (date: Date) => {
-  // Dalam bahasa Indonesia
-  const idFormatter = new Intl.DateTimeFormat("id-u-ca-islamic", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  const idResult = idFormatter.format(date);
-
-  // Dalam Arab
-  // Ekstrak day, month, year dalam kalender hijriah
-  const hijriFormatter = new Intl.DateTimeFormat("en-TN-u-ca-islamic", {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-  });
-  const parts = hijriFormatter.formatToParts(date);
-  const day = parts.find((p) => p.type === "day")?.value || "";
-  const monthIdx =
-    parseInt(parts.find((p) => p.type === "month")?.value || "1", 10) - 1;
-  const year = parts.find((p) => p.type === "year")?.value || "";
-  const bulanArab = bulanHijriArab[monthIdx] || "";
-
-  const arabResult = `${day} ${bulanArab} ${year} هـ`;
-
-  return `${idResult} / ${arabResult}`;
-};
-
 export default function HeaderCard() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [location, setLocation] = useState<Coordinates | null>(null);
@@ -95,7 +66,8 @@ export default function HeaderCard() {
           address.city || address.town || address.village
         }, ${address.state}`;
         setLocationName(locationString);
-      } catch (error) {
+      } catch (err: unknown) {
+        console.error("Error fetching location name:", err);
         setLocationName("Gagal mengambil nama lokasi");
       }
     };
@@ -109,7 +81,7 @@ export default function HeaderCard() {
           await getLocationName(latitude, longitude);
           setLoadingLocation(false);
         },
-        (error) => {
+        () => {
           setErrorLocation(true);
           setLocationName(
             "Lokasi tidak ditemukan. Coba refresh & izinkan akses lokasi."
@@ -133,7 +105,6 @@ export default function HeaderCard() {
     }, 1000);
 
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -259,7 +230,6 @@ export default function HeaderCard() {
                       year: "numeric",
                     }
                   );
-                  const idResult = idFormatter.format(currentDate);
 
                   const hijriFormatter = new Intl.DateTimeFormat(
                     "en-TN-u-ca-islamic",

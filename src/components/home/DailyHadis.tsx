@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Scroll, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getRandomHadis } from "@/lib/api/hadis";
 import { HadisSpecificResponse } from "@/types/hadis";
 

@@ -3,16 +3,6 @@ import HeaderCard from "@/components/home/HeaderCard";
 import DailyAyat from "@/components/home/DailyAyat";
 import DailyHadis from "@/components/home/DailyHadis";
 import Link from "next/link";
-import {
-  BookOpen,
-  Clock,
-  Gift,
-  Moon,
-  Umbrella,
-  HandHelping,
-  HeartHandshake,
-  Scroll,
-} from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {
