@@ -13,13 +13,21 @@ import {
   HeartHandshake,
   Scroll,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   // Primary features (Quran and Hadis)
   const primaryFeatures = [
     {
       title: "Al-Qur'an",
-      icon: <BookOpen className="w-12 h-12" />,
+      icon: (
+        <Image
+          src="/icons/quranicon.png"
+          alt="Quran"
+          width={120}
+          height={120}
+        />
+      ),
       href: "/quran",
       color: "border-gray-900",
       bgColor: "bg-gray-50",
@@ -27,7 +35,14 @@ export default function Home() {
     },
     {
       title: "Hadis",
-      icon: <Scroll className="w-12 h-12" />,
+      icon: (
+        <Image
+          src="/icons/hadisicon.png"
+          alt="Hadis"
+          width={120}
+          height={120}
+        />
+      ),
       href: "/hadis",
       color: "border-gray-900",
       bgColor: "bg-gray-50",
@@ -39,7 +54,9 @@ export default function Home() {
   const secondaryFeatures = [
     {
       title: "Doa",
-      icon: <HandHelping className="w-6 h-6" />,
+      icon: (
+        <Image src="/icons/doaicon.png" alt="Doa" width={120} height={120} />
+      ),
       href: "/doa",
       color: "border-gray-900",
       bgColor: "bg-gray-50",
@@ -47,7 +64,14 @@ export default function Home() {
     },
     {
       title: "Edukasi Zakat",
-      icon: <Gift className="w-6 h-6" />,
+      icon: (
+        <Image
+          src="/icons/zakaticon.png"
+          alt="Zakat"
+          width={120}
+          height={120}
+        />
+      ),
       href: "/zakat",
       color: "border-gray-950",
       bgColor: "bg-gray-50",
@@ -55,7 +79,14 @@ export default function Home() {
     },
     {
       title: "Edukasi Sholat",
-      icon: <Clock className="w-6 h-6" />,
+      icon: (
+        <Image
+          src="/icons/sholaticon.png"
+          alt="Sholat"
+          width={120}
+          height={120}
+        />
+      ),
       href: "/sholat",
       color: "border-gray-950",
       bgColor: "bg-gray-50",
@@ -63,7 +94,14 @@ export default function Home() {
     },
     {
       title: "Edukasi Puasa",
-      icon: <Moon className="w-6 h-6" />,
+      icon: (
+        <Image
+          src="/icons/puasaicon.png"
+          alt="Puasa"
+          width={120}
+          height={120}
+        />
+      ),
       href: "/puasa",
       color: "border-gray-950",
       bgColor: "bg-gray-50",
@@ -71,7 +109,9 @@ export default function Home() {
     },
     {
       title: "Edukasi Haji dan Umroh",
-      icon: <Umbrella className="w-6 h-6" />,
+      icon: (
+        <Image src="/icons/hajiicon.png" alt="Haji" width={120} height={120} />
+      ),
       href: "/haji",
       color: "border-gray-900",
       bgColor: "bg-gray-50",
@@ -80,7 +120,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="bg-gray-50 py-8 px-4 md:px-8">
+    <div className="py-8 px-4 md:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         <HeaderCard />
 
@@ -93,7 +133,7 @@ export default function Home() {
                   className={`bg-gray-50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 text-center border-b-6 ${feature.color} group`}
                 >
                   <div
-                    className={`p-4 ${feature.bgColor} rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform`}
+                    className={`p-4 ${feature.bgColor} rounded-full w-30 h-30 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform`}
                   >
                     <div className={feature.iconColor}>{feature.icon}</div>
                   </div>
@@ -112,11 +152,9 @@ export default function Home() {
             {secondaryFeatures.map((feature) => (
               <Link key={feature.title} href={feature.href}>
                 <div
-                  className={`bg-gray-900 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 text-center border-b-6 ${feature.color} group`}
+                  className={`bg-gray-900 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-4 text-center border-b-6 ${feature.color} group`}
                 >
-                  <div
-                    className={`p-3 ${feature.bgColor} rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center group-hover:scale-110 transition-transform`}
-                  >
+                  <div className="rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <div className={feature.iconColor}>{feature.icon}</div>
                   </div>
                   <h3 className="text-sm font-semibold text-gray-50 group-hover:text-gray-50 transition-colors">
@@ -130,7 +168,14 @@ export default function Home() {
 
         {/* Penyaluran CTA */}
         <div className="bg-[#03533d] rounded-xl overflow-hidden border-b-6 border-gray-900 p-8 text-center text-white transition-all duration-300">
-          <HeartHandshake className="w-12 h-12 mx-auto mb-4" />
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/icons/onchaindonationicon.png"
+              alt="Penyaluran"
+              width={200}
+              height={200}
+            />
+          </div>
           <h2 className="text-2xl font-bold mb-2">
             Salurkan Zakat, Infaq & Sedekah
           </h2>
@@ -140,10 +185,9 @@ export default function Home() {
           </p>
           <Link
             href="/penyaluran"
-            className="inline-flex items-center gap-2 bg-white text-emerald-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center gap-2 bg-white text-[#03533d] px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
           >
             Mulai Penyaluran
-            <HeartHandshake className="w-4 h-4" />
           </Link>
         </div>
 

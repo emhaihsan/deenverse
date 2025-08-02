@@ -6,24 +6,72 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { AdhanService } from "@/lib/adhan";
 import { Coordinates } from "adhan";
-import { MapPin } from "lucide-react";
+import { MapPin, RefreshCw } from "lucide-react";
 
-// Fungsi untuk format tanggal Hijriah
+// Hari dalam Arab (urutan Senin-Minggu: Senin=0 di JS)
+const hariArab = [
+  "الاثنين", // Senin
+  "الثلاثاء", // Selasa
+  "الأربعاء", // Rabu
+  "الخميس", // Kamis
+  "الجمعة", // Jumat
+  "السبت", // Sabtu
+  "الأحد", // Minggu
+];
+
+// Nama bulan hijriah dalam Arab
+const bulanHijriArab = [
+  "محرم",
+  "صفر",
+  "ربيع الأول",
+  "ربيع الآخر",
+  "جمادى الأولى",
+  "جمادى الآخرة",
+  "رجب",
+  "شعبان",
+  "رمضان",
+  "شوال",
+  "ذو القعدة",
+  "ذو الحجة",
+];
+
+// Fungsi untuk format tanggal Hijriah (Indonesia dan Arab)
 const formatHijri = (date: Date) => {
-  const formatter = new Intl.DateTimeFormat("id-u-ca-islamic", {
+  // Dalam bahasa Indonesia
+  const idFormatter = new Intl.DateTimeFormat("id-u-ca-islamic", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-  return formatter.format(date);
+  const idResult = idFormatter.format(date);
+
+  // Dalam Arab
+  // Ekstrak day, month, year dalam kalender hijriah
+  const hijriFormatter = new Intl.DateTimeFormat("en-TN-u-ca-islamic", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+  });
+  const parts = hijriFormatter.formatToParts(date);
+  const day = parts.find((p) => p.type === "day")?.value || "";
+  const monthIdx =
+    parseInt(parts.find((p) => p.type === "month")?.value || "1", 10) - 1;
+  const year = parts.find((p) => p.type === "year")?.value || "";
+  const bulanArab = bulanHijriArab[monthIdx] || "";
+
+  const arabResult = `${day} ${bulanArab} ${year} هـ`;
+
+  return `${idResult} / ${arabResult}`;
 };
 
 export default function HeaderCard() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [location, setLocation] = useState<Coordinates | null>(null);
+  const [loadingLocation, setLoadingLocation] = useState(true);
   const [locationName, setLocationName] = useState<string>(
     "Mengambil lokasi..."
   );
+  const [errorLocation, setErrorLocation] = useState<boolean>(false);
   const [nextPrayer, setNextPrayer] = useState<{
     name: string;
     time: Date;
@@ -31,36 +79,63 @@ export default function HeaderCard() {
   const [timeRemaining, setTimeRemaining] = useState<string>("");
   const [isPrayerTime, setIsPrayerTime] = useState<boolean>(false);
 
-  useEffect(() => {
+  const fetchLocation = () => {
+    setLoadingLocation(true);
+    setErrorLocation(false);
+    setLocationName("Mengambil lokasi...");
+
     const getLocationName = async (lat: number, lng: number) => {
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
         );
         const data = await response.json();
-
-        // Try to get the most specific location name available
-        const locationName =
-          data.address.city ||
-          data.address.town ||
-          data.address.village ||
-          data.address.county ||
-          data.address.state ||
-          "Lokasi tidak diketahui";
-
-        setLocationName(locationName);
+        const address = data.address;
+        const locationString = `${
+          address.city || address.town || address.village
+        }, ${address.state}`;
+        setLocationName(locationString);
       } catch (error) {
-        console.error("Error getting location name:", error);
-        setLocationName("Lokasi tidak diketahui");
+        setLocationName("Gagal mengambil nama lokasi");
       }
     };
 
-    if (location) {
-      getLocationName(location.latitude, location.longitude);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const coords = new Coordinates(latitude, longitude);
+          setLocation(coords);
+          await getLocationName(latitude, longitude);
+          setLoadingLocation(false);
+        },
+        (error) => {
+          setErrorLocation(true);
+          setLocationName(
+            "Lokasi tidak ditemukan. Coba refresh & izinkan akses lokasi."
+          );
+          setLoadingLocation(false);
+        }
+      );
+    } else {
+      setErrorLocation(true);
+      setLocationName("Geolocation tidak didukung oleh browser ini.");
+      setLoadingLocation(false);
     }
-  }, [location]);
+  };
 
-  // Update waktu setiap detik
+  useEffect(() => {
+    fetchLocation();
+
+    // Timer for date and prayer times
+    const timer = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -102,30 +177,6 @@ export default function HeaderCard() {
     return () => clearInterval(timer);
   }, [nextPrayer]);
 
-  // Ambil lokasi pengguna
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const coords = new Coordinates(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-          setLocation(coords);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          // Default ke Jakarta
-          setLocation(new Coordinates(-6.2088, 106.8456));
-        }
-      );
-    } else {
-      // Default ke Jakarta
-      setLocation(new Coordinates(-6.2088, 106.8456));
-    }
-  }, []);
-
-  // Hitung jadwal sholat
   useEffect(() => {
     if (!location) return;
 
@@ -133,32 +184,6 @@ export default function HeaderCard() {
     const next = adhanService.getNextPrayer(currentDate, location);
     setNextPrayer(next);
   }, [location, currentDate]);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const coords = new Coordinates(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-          setLocation(coords);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          // Default to Jakarta
-          const jakartaCoords = new Coordinates(-6.2088, 106.8456);
-          setLocation(jakartaCoords);
-          setLocationName("Jakarta, Indonesia");
-        }
-      );
-    } else {
-      // Default to Jakarta if geolocation is not supported
-      const jakartaCoords = new Coordinates(-6.2088, 106.8456);
-      setLocation(jakartaCoords);
-      setLocationName("Jakarta, Indonesia");
-    }
-  }, []);
 
   // Format tanggal Gregorian
   const formatGregorian = (date: Date) => {
@@ -170,11 +195,39 @@ export default function HeaderCard() {
     return format(date, "EEEE", { locale: id });
   };
 
-  if (!location) {
+  // Dapatkan hari dalam Arab (Senin=0, Minggu=6 di JS: getDay())
+  const getHariArab = (date: Date) => {
+    // JS: Minggu=0, Senin=1, ..., Sabtu=6
+    const jsDay = date.getDay(); // 0-6
+    // urutan arab: Senin(0), ..., Minggu(6)
+    // kita mapping: JS(0/Minggu) => Arab(6), JS(1/Senin) => Arab(0), dst
+    const mapJsToArab = [6, 0, 1, 2, 3, 4, 5];
+    return hariArab[mapJsToArab[jsDay]];
+  };
+
+  if (loadingLocation) {
     return (
       <div className="bg-[#03533d] rounded-xl overflow-hidden border-b-6 border-gray-900-900 p-6 animate-pulse">
         <div className="h-6 bg-white/10 rounded-lg w-1/2 mb-4"></div>
         <div className="h-4 bg-white/10 rounded-lg w-3/4"></div>
+      </div>
+    );
+  }
+
+  if (errorLocation) {
+    return (
+      <div className="bg-[#03533d] text-white rounded-xl overflow-hidden border-b-6 border-gray-900 p-6 flex flex-col items-center space-y-3">
+        <div className="flex items-center text-yellow-300 text-sm space-x-2">
+          <MapPin className="w-4 h-4" />
+          <span>{locationName}</span>
+        </div>
+        <button
+          className="flex items-center px-4 py-2 bg-white/10 rounded-lg text-emerald-100 hover:bg-white/20 transition-colors"
+          onClick={fetchLocation}
+        >
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Refresh Lokasi
+        </button>
       </div>
     );
   }
@@ -186,11 +239,57 @@ export default function HeaderCard() {
         <div className="flex justify-between items-start">
           {/* Date Section */}
           <div>
-            <div className="text-3xl font-bold mb-1">
-              {getHari(currentDate).toUpperCase()}
+            <div className="text-3xl font-bold mb-1 flex items-center space-x-3">
+              <span>{getHari(currentDate).toUpperCase()}</span>/&nbsp;
+              <span className="text-2xl text-white font-normal" dir="rtl">
+                {getHariArab(currentDate)}
+              </span>
             </div>
             <div className="text-emerald-100">
-              {formatGregorian(currentDate)} / {formatHijri(currentDate)}
+              {formatGregorian(currentDate)}
+              <span className="mx-1">/</span>
+              {/* Hijriah: Indonesia dan Arab */}
+              <span>
+                {(() => {
+                  const idFormatter = new Intl.DateTimeFormat(
+                    "id-u-ca-islamic",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  );
+                  const idResult = idFormatter.format(currentDate);
+
+                  const hijriFormatter = new Intl.DateTimeFormat(
+                    "en-TN-u-ca-islamic",
+                    {
+                      day: "numeric",
+                      month: "numeric",
+                      year: "numeric",
+                    }
+                  );
+                  const parts = hijriFormatter.formatToParts(currentDate);
+                  const day = parts.find((p) => p.type === "day")?.value || "";
+                  const monthIdx =
+                    parseInt(
+                      parts.find((p) => p.type === "month")?.value || "1",
+                      10
+                    ) - 1;
+                  const year =
+                    parts.find((p) => p.type === "year")?.value || "";
+                  const bulanArab = bulanHijriArab[monthIdx] || "";
+                  return (
+                    <>
+                      <span
+                        dir="rtl"
+                        lang="ar"
+                        className="font-arabic"
+                      >{`${day} ${bulanArab} ${year} هـ`}</span>
+                    </>
+                  );
+                })()}
+              </span>
             </div>
           </div>
 
