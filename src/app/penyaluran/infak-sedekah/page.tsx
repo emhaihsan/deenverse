@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { parseEther } from "viem";
@@ -13,14 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle, XCircle, Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  AlertCircle,
-  ArrowLeft,
-  Heart,
-  Wallet,
-  Info,
-  HandCoins,
-} from "lucide-react";
+import { AlertCircle, Wallet, Info, HandCoins } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import {
   convertIdrToEth,
@@ -29,6 +21,8 @@ import {
 } from "@/lib/api/cryptoPrice";
 import Image from "next/image";
 import organizations from "@/data/destinationOrg";
+import InfakHeaders from "@/components/penyaluran/infak/InfakHeaders";
+import InfakEdu from "@/components/penyaluran/infak/InfakEdu";
 
 export default function InfakSedekahPenyaluranPage() {
   const { isConnected, address } = useAccount();
@@ -170,63 +164,9 @@ export default function InfakSedekahPenyaluranPage() {
   return (
     <div className="py-8 px-4 md:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Back Navigation */}
-        <div className="flex items-center">
-          <Link
-            href="/penyaluran"
-            className="flex items-center gap-2 text-gray-900 hover:text-[#03533d] transition-colors font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Penyaluran</span>
-          </Link>
-        </div>
+        <InfakHeaders />
 
-        {/* Header */}
-        <div className="bg-[#03533d] text-white rounded-xl overflow-hidden border-b-6 border-gray-900 p-6">
-          <div className="flex flex-col items-center text-center">
-            <div className="p-3 bg-white/20 rounded-2xl mb-4">
-              <Heart className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">
-              Penyaluran Infaq & Sedekah
-            </h1>
-            <p className="text-emerald-100 text-lg max-w-2xl">
-              Salurkan infaq dan sedekah Anda secara transparan dan aman
-              menggunakan teknologi blockchain
-            </p>
-          </div>
-        </div>
-
-        {/* Educational Section */}
-        <div className="bg-gray-100 rounded-2xl border border-b-6 border-gray-900 p-6">
-          <div className="flex items-start gap-4 mb-4">
-            <Info className="w-6 h-6 text-[#03533d] mt-1 flex-shrink-0" />
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-3">
-                Tentang Infak & Sedekah
-              </h2>
-              <div className="text-gray-600 space-y-3 text-sm">
-                <p>
-                  <strong>Infak</strong> adalah pemberian harta yang dikeluarkan
-                  oleh seseorang atau badan usaha di luar zakat untuk
-                  kemaslahatan umat. Bersifat sunnah dan bisa diberikan kapan
-                  saja.
-                </p>
-                <p>
-                  <strong>Sedekah</strong> adalah pemberian sukarela yang
-                  diberikan oleh seorang muslim kepada orang lain, terutama
-                  kepada yang membutuhkan, semata-mata mengharap ridha Allah
-                  SWT.
-                </p>
-                <p>
-                  Keduanya memiliki keutamaan yang tinggi dalam Islam dan dapat
-                  menjadi sarana pembersih harta serta penambah pahala.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <InfakEdu />
         {/* Organization Selection */}
         <div className="bg-white rounded-2xl  border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-4">
