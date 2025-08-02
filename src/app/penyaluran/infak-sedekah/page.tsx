@@ -35,11 +35,13 @@ export default function InfakSedekahPenyaluranPage() {
   const [amount, setAmount] = useState<number>(0);
   const [description, setDescription] = useState<string>("");
   const [selectedOrg, setSelectedOrg] = useState<string>("");
-  const [ethAmount, setEthAmount] = useState<string>("0");
+  const [ethAmount, setEthAmount] = useState<string | number>("");
   const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
   const [ethPrice, setEthPrice] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
+  const [isProcessingApi, setIsProcessingApi] = useState(false);
 
   const { data: hash, isPending, writeContract } = useWriteContract();
 
@@ -47,6 +49,8 @@ export default function InfakSedekahPenyaluranPage() {
     useWaitForTransactionReceipt({
       hash,
     });
+
+  const isSubmitting = isProcessingApi || isPending || isConfirming;
 
   const presetAmounts = [50000, 100000, 250000, 500000, 1000000];
 
@@ -91,6 +95,7 @@ export default function InfakSedekahPenyaluranPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage(null);
     setStatusMessage("");
 
     if (!isConnected || !address) {
@@ -106,17 +111,14 @@ export default function InfakSedekahPenyaluranPage() {
       return;
     }
 
+    setIsProcessingApi(true);
     try {
       // Step 1: Generate NFT Metadata via our API
       setStatusMessage("1/3: Membuat sertifikat NFT...");
       const orgName =
         organizations.find((o) => o.id === selectedOrg)?.name ||
         "Lembaga Terpilih";
-      const today = new Date().toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
+      const isoDate = new Date().toISOString();
 
       const apiResponse = await fetch("/api/certificate", {
         method: "POST",
@@ -124,7 +126,8 @@ export default function InfakSedekahPenyaluranPage() {
         body: JSON.stringify({
           walletAddress: address,
           amount: amount.toString(),
-          date: today,
+          ethAmount: ethAmount.toString(),
+          date: isoDate, // Send ISO date to API
           type: "Infaq & Sedekah",
           orgName: orgName,
         }),
@@ -145,14 +148,8 @@ export default function InfakSedekahPenyaluranPage() {
         address: deenVerseDistributionAddress,
         abi: deenVerseDistributionABI,
         functionName: "makePayment",
-        args: [
-          selectedOrg, // orgId
-          1, // paymentType (1 for INFAQ)
-          "Infaq & Sedekah", // subType
-          description, // note
-          tokenURI, // tokenURI
-        ],
-        value: parseEther(ethAmount as `${number}`),
+        args: [selectedOrg, 1, "Infaq & Sedekah", description, tokenURI],
+        value: parseEther(ethAmount.toString()),
       });
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -161,14 +158,14 @@ export default function InfakSedekahPenyaluranPage() {
           err.message || "Terjadi kesalahan saat memproses permintaan Anda"
         );
       } else {
-        console.error("Submission error:", err);
-        setError("Terjadi kesalahan saat memproses permintaan Anda");
+        console.error("An unknown error occurred:", err);
+        setError("Terjadi kesalahan yang tidak diketahui.");
       }
       setStatusMessage("");
+    } finally {
+      setIsProcessingApi(false);
     }
   };
-
-  const isSubmitting = isPending || isConfirming;
 
   return (
     <div className="bg-gray-50 py-8 px-4 md:px-8">
@@ -441,22 +438,27 @@ export default function InfakSedekahPenyaluranPage() {
           {isSubmitting && !error && (
             <Alert>
               <Loader className="h-4 w-4 animate-spin" />
-              <AlertTitle>Sedang Diproses</AlertTitle>
+              <AlertTitle>Sedang Diproses...</AlertTitle>
               <AlertDescription>{statusMessage}</AlertDescription>
             </Alert>
           )}
 
           {isConfirmed && (
-            <Alert variant="default">
-              <CheckCircle className="h-4 w-4" />
-              <AlertTitle>Transaksi Berhasil!</AlertTitle>
-              <AlertDescription>
+            <Alert
+              variant="default"
+              className="bg-emerald-50 border-emerald-200"
+            >
+              <CheckCircle className="h-4 w-4 text-emerald-600" />
+              <AlertTitle className="text-emerald-800">
+                Transaksi Berhasil!
+              </AlertTitle>
+              <AlertDescription className="text-emerald-700">
                 Donasi Anda telah berhasil dicatat di blockchain. Terima kasih!
                 <a
                   href={`https://sepolia-blockscout.lisk.com/tx/${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-green-700 hover:underline ml-2"
+                  className="font-medium text-emerald-800 hover:underline ml-2"
                 >
                   Lihat Transaksi
                 </a>
@@ -465,7 +467,7 @@ export default function InfakSedekahPenyaluranPage() {
           )}
 
           {!isConnected && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-gray-500 mt-4">
               Harap hubungkan dompet Anda untuk melanjutkan pembayaran.
             </div>
           )}

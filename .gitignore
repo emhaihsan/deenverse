@@ -42,3 +42,6 @@ next-env.d.ts
 
 refdata
 pinatadocs.txt
+
+certificate-preview
+src/app/api/certificate/preview
