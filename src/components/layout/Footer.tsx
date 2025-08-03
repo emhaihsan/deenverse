@@ -18,23 +18,21 @@ export default function Footer() {
             </div>
             <div>
               <span className="block text-xl font-bold">DeenVerse</span>
-              <span className="block text-sm text-gray-400">
-                Platform Digital Islami
-              </span>
             </div>
           </div>
 
-          <p className="text-gray-400 text-sm leading-relaxed ">
-            DeenVerse adalah platform digital yang menyediakan akses mudah
-            terhadap Al-Qur&apos;an, Hadis, Doa, dan informasi keislaman
-            lainnya. Dibangun dengan teknologi modern untuk memudahkan umat
-            Islam dalam mempelajari dan mengamalkan ajaran agama.
+          <p className="text-gray-400 text-sm leading-relaxed">
+            DeenVerse adalah platform digital berbasis Web3 yang menyediakan
+            akses mudah terhadap Al-Qur&apos;an, Hadis, Doa, dan informasi
+            keislaman lainnya. Dengan integrasi teknologi blockchain dan smart
+            contract, DeenVerse menghadirkan transparansi, keamanan, serta
+            solusi donasi dan penyaluran infak/zakat yang terdesentralisasi
+            untuk memudahkan umat Islam mempelajari dan mengamalkan ajaran agama
+            di era digital.
           </p>
 
           <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400 border-t border-gray-800 pt-4">
-            <span>{currentYear} DeenVerse</span>
-            <span>•</span>
-            <span>Dibuat dalam rangka Lisk Builders Challenge 2</span>
+            <span>&copy; {currentYear} DeenVerse</span>
           </div>
         </div>
       </div>

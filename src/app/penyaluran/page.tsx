@@ -1,6 +1,13 @@
 // app/penyaluran/page.tsx
 import Link from "next/link";
-import { HeartHandshake, Wheat, Beef, HandCoins, Scale } from "lucide-react";
+import {
+  HeartHandshake,
+  Wheat,
+  Beef,
+  HandCoins,
+  Scale,
+  Clock,
+} from "lucide-react";
 import Image from "next/image";
 
 export default function PenyaluranPage() {
@@ -12,6 +19,7 @@ export default function PenyaluranPage() {
       icon: Scale,
       href: "/penyaluran/zakat",
       color: "bg-emerald-500",
+      isActive: false, // Disabled temporarily
     },
     {
       title: "Infaq & Sedekah",
@@ -20,6 +28,7 @@ export default function PenyaluranPage() {
       icon: HeartHandshake,
       href: "/penyaluran/infak-sedekah",
       color: "bg-blue-500",
+      isActive: true, // Only this one is active
     },
     {
       title: "Fidyah",
@@ -27,6 +36,7 @@ export default function PenyaluranPage() {
       icon: Wheat,
       href: "/penyaluran/fidyah",
       color: "bg-amber-500",
+      isActive: false, // Disabled temporarily
     },
     {
       title: "Qurban",
@@ -34,6 +44,7 @@ export default function PenyaluranPage() {
       icon: Beef,
       href: "/penyaluran/qurban", // Fix the qurban link
       color: "bg-rose-500",
+      isActive: false, // Disabled temporarily
     },
   ];
 
@@ -63,22 +74,52 @@ export default function PenyaluranPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {penyaluranItems.map((item, index) => {
             const Icon = item.icon;
+
+            // Render active items as links
+            if (item.isActive) {
+              return (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="bg-white rounded-2xl border-b-4 border-gray-900 p-6 hover:border-b-6 hover:border-[#03533d] hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex items-start gap-4 text-gray-900 hover:text-[#03533d]">
+                    <div className={`p-3 rounded-xl`}>
+                      <Icon className="w-8 h-8" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium mb-2">{item.title}</h3>
+                      <p className="text-sm">{item.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            }
+
+            // Render inactive items as disabled cards
             return (
-              <Link
+              <div
                 key={index}
-                href={item.href}
-                className="bg-white rounded-2xl border-b-4 border-gray-900 p-6 hover:border-b-6 hover:border-[#03533d]  hover:shadow-md transition-all duration-300"
+                className="bg-white rounded-2xl border-b-4 border-gray-300 p-6 opacity-60 cursor-not-allowed relative"
               >
-                <div className="flex items-start gap-4 text-gray-900 hover:text-[#03533d]">
-                  <div className={`p-3 rounded-xl`}>
+                <div className="flex items-start gap-4 text-gray-500">
+                  <div className={`p-3 rounded-xl bg-gray-100`}>
                     <Icon className="w-8 h-8" />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">{item.title}</h3>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-lg font-medium">{item.title}</h3>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        <Clock className="w-3 h-3" />
+                        Coming Soon
+                      </span>
+                    </div>
                     <p className="text-sm">{item.description}</p>
                   </div>
                 </div>
-              </Link>
+                {/* Overlay to prevent interaction */}
+                <div className="absolute inset-0 bg-transparent"></div>
+              </div>
             );
           })}
         </div>

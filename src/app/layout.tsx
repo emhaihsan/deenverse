@@ -16,7 +16,7 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DeenVerse - Muslim Superapp",
+  title: "DeenVerse",
   description:
     "Platform digital untuk mempermudah ibadah dan memperdalam pemahaman agama Islam",
   icons: {
