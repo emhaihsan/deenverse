@@ -15,7 +15,7 @@ DeenVerse is packed with features to cater to the daily needs of a Muslim:
 - **🕋 Panduan Haji & Umroh:** Comprehensive guides covering the rituals, requirements, and wisdom behind Hajj and Umrah.
 - **🍽️ Panduan Puasa:** Detailed information on various types of Islamic fasts, their rules, and their virtues.
 - **💰 Edukasi Zakat:** An in-depth educational module on 10 different types of Zakat, complete with multi-madhab perspectives and a Zakat calculator.
-- **💸 Penyaluran On-Chain:** A secure and transparent platform for paying Zakat, Infaq, Sedekah, Fidyah, and Qurban directly on the blockchain (Lisk Sepolia Testnet), integrated with **Xellar Wallet**.
+- **💸 Penyaluran On-Chain:** A secure and transparent platform for paying Zakat, Infaq, Sedekah, Fidyah, and Qurban directly on the blockchain (Lisk Sepolia Testnet). Features a completely refactored, modular UI with a consistent emerald-green theme for Zakat Penyaluran pages (Emas, Pertanian, Peternakan, Fitrah). The card-based design and reusable components ensure a clean and intuitive user experience, integrated with **Xellar Wallet**.
 
 ## 🛠️ Tech Stack
 

@@ -3,7 +3,6 @@
 import { Beef, Wallet, Users, Heart, CheckCircle } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import {
   convertIdrToEth,
   formatEth,
@@ -29,7 +28,7 @@ export default function QurbanPenyaluranPage() {
     "individual"
   );
   const [ethAmount, setEthAmount] = useState<string>("0");
-  const [isLoadingEth, setIsLoadingEth] = useState<boolean>(false);
+  const [, setIsLoadingEth] = useState<boolean>(false);
   const [ethPrice, setEthPrice] = useState<number>(0);
 
   useEffect(() => {
