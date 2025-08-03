@@ -125,7 +125,7 @@ export default function HadisDetailPage() {
             </h2>
             <div className="bg-gray-50 p-6 rounded-lg border-r-4 border-emerald-600">
               <p
-                className="text-right text-3xl leading-loose font-naskh text-gray-900"
+                className="text-right text-3xl leading-loose font-arabic text-gray-900"
                 dir="rtl"
               >
                 {hadis.data.contents.arab}

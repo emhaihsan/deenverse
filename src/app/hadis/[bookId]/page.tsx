@@ -241,7 +241,7 @@ export default function HadisBookPage() {
                     Hadis No. {hadis.number}
                   </p>
                   <p
-                    className="text-2xl text-right leading-loose font-naskh text-gray-900 mb-4 line-clamp-3"
+                    className="text-2xl text-right leading-loose font-arabic text-gray-900 mb-4 line-clamp-3"
                     dir="rtl"
                   >
                     {hadis.arab}

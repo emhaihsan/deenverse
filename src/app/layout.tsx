@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Roboto_Mono } from "next/font/google";
+import { Roboto, Roboto_Mono, Amiri } from "next/font/google";
 import "./globals.css";
 import Layout from "@/components/layout/Layout";
 import { Web3Provider } from "@/components/web3/Web3Provider";
@@ -13,6 +13,12 @@ const roboto = Roboto({
 const robotoMono = Roboto_Mono({
   variable: "--font-roboto-mono",
   subsets: ["latin"],
+});
+
+const amiri = Amiri({
+  variable: "--font-amiri",
+  subsets: ["arabic"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -31,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${roboto.variable} ${robotoMono.variable} antialiased`}>
+      <body className={`${roboto.variable} ${robotoMono.variable} ${amiri.variable} antialiased`}>
         <Web3Provider>
           <Layout>{children}</Layout>
         </Web3Provider>

@@ -126,3 +126,10 @@
     background-size: 1.25rem 1.25rem;
   }
 }
+
+/* Arabic font class using Amiri (Naskh script) */
+.font-arabic {
+  font-family: var(--font-amiri), 'Amiri', serif;
+  font-feature-settings: 'liga' 1, 'dlig' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
