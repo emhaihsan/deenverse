@@ -26,17 +26,19 @@ const PuasaPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <Header 
-        title="Panduan Puasa Lengkap"
-        subtitle="Pelajari berbagai jenis puasa wajib dan sunnah sesuai tuntunan syariat."
-        showBackButton={false}
-      />
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <Header
+          title="Panduan Puasa Lengkap"
+          subtitle="Pelajari berbagai jenis puasa wajib dan sunnah sesuai tuntunan syariat."
+          showBackButton={false}
+        />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-12">
           {categories.map((category) => {
-            const filteredPuasa = puasaData.filter((p) => p.category === category);
+            const filteredPuasa = puasaData.filter(
+              (p) => p.category === category
+            );
             if (filteredPuasa.length === 0) return null;
 
             return (
@@ -45,9 +47,17 @@ const PuasaPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredPuasa.map((puasa) => (
                     <Link href={`/puasa/${puasa.slug}`} key={puasa.id}>
-                      <div className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border-l-4 ${getCategoryColor(puasa.category)} h-full flex flex-col`}>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{puasa.title}</h3>
-                        <p className="text-gray-600 text-sm flex-grow">{puasa.description}</p>
+                      <div
+                        className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border-l-4 ${getCategoryColor(
+                          puasa.category
+                        )} h-full flex flex-col`}
+                      >
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          {puasa.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm flex-grow">
+                          {puasa.description}
+                        </p>
                       </div>
                     </Link>
                   ))}
@@ -56,7 +66,7 @@ const PuasaPage = () => {
             );
           })}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

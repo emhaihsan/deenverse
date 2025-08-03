@@ -70,10 +70,10 @@ export default async function PuasaDetailPage({
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <Header title={puasa.title} subtitle={puasa.description} />
+    <div className="min-h-screen">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Header title={puasa.title} subtitle={puasa.description} />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           {/* Niat Section */}
           <DetailSection title="Niat Puasa" icon={CheckCircle}>

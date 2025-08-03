@@ -49,15 +49,15 @@ export default async function SholatDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header
-        title={shalat.title}
-        subtitle={`Panduan lengkap ${shalat.title}`}
-        showBackButton={true}
-        backButtonHref="/sholat"
-      />
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <Header
+          title={shalat.title}
+          subtitle={`Panduan lengkap ${shalat.title}`}
+          showBackButton={true}
+          backButtonHref="/sholat"
+        />
+        <div className="max-w-6xl mx-auto space-y-8">
           {/* Description Card */}
           <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
             <div className="flex items-center mb-4">
@@ -199,7 +199,7 @@ export default async function SholatDetailPage({
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

@@ -106,12 +106,12 @@ export default async function HajiDetailPage({
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <Header
-        title={topic.title}
-        subtitle={topic.definition.content as string}
-      />
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <Header
+          title={topic.title}
+          subtitle={topic.definition.content as string}
+        />
         <div className="space-y-6">
           <DetailSection section={topic.definition} icon={Info} />
           <DetailSection section={topic.history} icon={History} />
@@ -130,7 +130,7 @@ export default async function HajiDetailPage({
           <PillarSection data={topic.pillars} icon={CheckSquare} />
           <PillarSection data={topic.wajib} icon={CheckSquare} />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

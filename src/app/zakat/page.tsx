@@ -6,14 +6,14 @@ import { Heart, HandCoins, Scale, HeartHandshake } from "lucide-react";
 
 export default function ZakatPage() {
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <Header
-        title="Edukasi Zakat"
-        subtitle="Pelajari kewajiban zakat menurut hukum Islam dari empat madzhab utama"
-        showBackButton={false}
-      />
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <Header
+          title="Edukasi Zakat"
+          subtitle="Pelajari kewajiban zakat menurut hukum Islam dari empat madzhab utama"
+          showBackButton={false}
+        />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Zakat Education List */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
@@ -205,7 +205,7 @@ export default function ZakatPage() {
             <HeartHandshake className="w-4 h-4" />
           </Link>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
