@@ -134,8 +134,8 @@ export default function HadisBookPage() {
 
   if (loading && !bookInfo) {
     return (
-      <div className="bg-gray-50 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="py-8 px-4 md:px-8">
+        <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
             <p className="mt-4 text-gray-600">Memuat hadis...</p>
@@ -147,8 +147,8 @@ export default function HadisBookPage() {
 
   if (error) {
     return (
-      <div className="bg-gray-50 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="py-8 px-4 md:px-8">
+        <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Gagal Memuat Hadis
@@ -167,102 +167,91 @@ export default function HadisBookPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center gap-4 mb-6">
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {bookInfo && (
+          <div className="bg-[#03533d] rounded-xl p-6 mb-8 shadow-lg border-b-4 border-gray-900">
             <Link
               href="/hadis"
-              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+              className="inline-flex items-center text-emerald-200 hover:text-white mb-4 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Kembali ke daftar kitab
             </Link>
-            <div>
-              <h1 className="text-3xl font-bold">{bookInfo?.name}</h1>
-              <p className="opacity-90">
-                {bookInfo?.available.toLocaleString()} hadis tersedia
-              </p>
+            <div className="flex items-center">
+              <div className="p-3 bg-white/10 rounded-lg mr-4">
+                <BookOpen className="w-10 h-10 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">
+                  {bookInfo.name}
+                </h1>
+                <p className="text-emerald-100">
+                  Total {bookInfo.available.toLocaleString()} hadis
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Pagination Info and Controls */}
-        <div className="mb-8 space-y-4">
-          <div className="text-center">
-            <p className="text-gray-600">
-              Halaman {currentPage} dari {totalPages} • Menampilkan hadis{" "}
-              {(currentPage - 1) * HADIS_PER_PAGE + 1} -{" "}
-              {Math.min(currentPage * HADIS_PER_PAGE, bookInfo?.available || 0)}
-            </p>
-          </div>
-
-          {/* Jump to Page Form */}
-          <div className="flex justify-center">
+        {totalPages > 0 && (
+          <div className="bg-white p-6 rounded-xl shadow-md mb-8">
             <form
               onSubmit={handleJumpToPage}
-              className="flex items-center gap-2"
+              className="flex flex-col sm:flex-row items-center gap-3"
             >
-              <label htmlFor="jump-page" className="text-sm text-gray-600">
-                Lompat ke halaman:
+              <label htmlFor="jump-page" className="font-medium text-gray-700">
+                Lompat ke Halaman:
               </label>
               <input
-                type="number"
                 id="jump-page"
+                type="number"
                 value={jumpToPage}
                 onChange={(e) => setJumpToPage(e.target.value)}
-                placeholder={`1-${totalPages}`}
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-32 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
+                placeholder={`1 - ${totalPages}`}
                 min="1"
                 max={totalPages}
-                className="w-24 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
               <button
                 type="submit"
-                className="px-3 py-1 text-sm bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+                className="w-full sm:w-auto bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
               >
-                Go
+                Lompat
               </button>
             </form>
           </div>
-        </div>
+        )}
 
-        {/* Hadis List - Arabic Only */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+          <div className="text-center py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Memuat hadis...</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="mb-8 space-y-6">
             {hadisList.map((hadis) => (
               <Link
-                key={hadis.number}
                 href={`/hadis/${bookId}/${hadis.number}`}
+                key={hadis.number}
+                className="block"
               >
-                <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-orange-100 rounded-full">
-                      <BookOpen className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">
-                      Hadis No. {hadis.number}
-                    </h3>
-                  </div>
-
-                  {/* Arabic Text Only */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-right text-xl leading-relaxed text-gray-800 font-arabic line-clamp-3">
-                      {hadis.arab}
-                    </p>
-                  </div>
-
-                  {/* Read More Indicator */}
-                  <div className="mt-4 text-center">
-                    <span className="text-sm text-orange-600 group-hover:text-orange-700 font-medium">
-                      Klik untuk membaca terjemahan →
+                <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-emerald-600 hover:shadow-lg hover:border-emerald-700 transition-all space-y-2">
+                  <p className="text-lg font-semibold text-emerald-800 mb-3">
+                    Hadis No. {hadis.number}
+                  </p>
+                  <p
+                    className="text-2xl text-right leading-loose font-naskh text-gray-900 mb-4 line-clamp-3"
+                    dir="rtl"
+                  >
+                    {hadis.arab}
+                  </p>
+                  <p className="text-gray-700 leading-relaxed text-justify line-clamp-2">
+                    {hadis.id}
+                  </p>
+                  <div className="text-center mt-4">
+                    <span className="text-sm font-medium text-emerald-600 group-hover:text-emerald-700">
+                      Baca Selengkapnya →
                     </span>
                   </div>
                 </div>
@@ -271,34 +260,27 @@ export default function HadisBookPage() {
           </div>
         )}
 
-        {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="mt-12 space-y-4">
-            {/* Main Pagination Controls */}
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              {/* First Page */}
+          <div className="mt-10">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mb-4 flex-wrap">
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
-                className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 title="Halaman Pertama"
               >
                 <ChevronsLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">First</span>
               </button>
-
-              {/* Previous Page */}
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Sebelumnya</span>
+                <span className="hidden sm:inline">Prev</span>
               </button>
 
-              {/* Page Numbers */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-wrap justify-center">
                 {getPageNumbers().map((pageNum, index) =>
                   pageNum === "..." ? (
                     <span
@@ -311,10 +293,10 @@ export default function HadisBookPage() {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum as number)}
-                      className={`px-3 py-2 rounded-lg transition-colors ${
+                      className={`px-4 py-2 rounded-lg transition-colors ${
                         currentPage === pageNum
-                          ? "bg-orange-500 text-white"
-                          : "bg-white border border-gray-300 hover:bg-gray-50"
+                          ? "bg-emerald-600 text-white shadow-md"
+                          : "bg-white border border-gray-300 hover:bg-gray-100"
                       }`}
                     >
                       {pageNum}
@@ -323,68 +305,26 @@ export default function HadisBookPage() {
                 )}
               </div>
 
-              {/* Next Page */}
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <span className="hidden sm:inline">Selanjutnya</span>
+                <span className="hidden sm:inline">Next</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
-
-              {/* Last Page */}
               <button
                 onClick={() => handlePageChange(totalPages)}
                 disabled={currentPage === totalPages}
-                className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 title="Halaman Terakhir"
               >
-                <span className="hidden sm:inline">Last</span>
                 <ChevronsRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Quick Jump Options */}
-            <div className="flex items-center justify-center gap-2 text-sm">
-              <span className="text-gray-500">Lompat cepat:</span>
-              <button
-                onClick={() => handlePageChange(Math.max(1, currentPage - 10))}
-                disabled={currentPage <= 10}
-                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                -10
-              </button>
-              <button
-                onClick={() => handlePageChange(Math.max(1, currentPage - 100))}
-                disabled={currentPage <= 100}
-                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                -100
-              </button>
-              <span className="text-gray-400">|</span>
-              <button
-                onClick={() =>
-                  handlePageChange(Math.min(totalPages, currentPage + 100))
-                }
-                disabled={currentPage >= totalPages - 100}
-                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                +100
-              </button>
-              <button
-                onClick={() =>
-                  handlePageChange(Math.min(totalPages, currentPage + 10))
-                }
-                disabled={currentPage >= totalPages - 10}
-                className="px-2 py-1 text-orange-600 hover:text-orange-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                +10
               </button>
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

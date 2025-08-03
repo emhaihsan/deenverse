@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Share2, Copy, Check } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getSpecificHadis, getHadisBooks } from "@/lib/api/hadis";
 import { HadisSpecificResponse, HadisBook } from "@/types/hadis";
 
@@ -90,12 +90,10 @@ export default function HadisDetailPage() {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 min-h-screen">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat hadis...</p>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat hadis...</p>
         </div>
       </div>
     );
@@ -103,31 +101,27 @@ export default function HadisDetailPage() {
 
   if (error || !hadis) {
     return (
-      <div className="bg-gray-50 min-h-screen">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Hadis Tidak Ditemukan
-            </h2>
-            <p className="text-gray-600 mb-4">
-              {error || "Hadis yang Anda cari tidak ditemukan"}
-            </p>
-            <div className="space-x-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8 bg-white rounded-xl shadow-md max-w-lg mx-auto">
+          <h2 className="text-2xl font-bold text-red-600">Terjadi Kesalahan</h2>
+          <p className="mt-2 text-gray-700 mb-6">
+            {error || "Hadis yang Anda cari tidak dapat ditemukan."}
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link
+              href="/hadis"
+              className="inline-block bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Daftar Kitab
+            </Link>
+            {bookInfo && (
               <Link
-                href="/hadis"
-                className="inline-block bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                href={`/hadis/${bookId}`}
+                className="inline-block bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
               >
-                Kembali ke Daftar Kitab
+                Kembali ke {bookInfo.name}
               </Link>
-              {bookInfo && (
-                <Link
-                  href={`/hadis/${bookId}`}
-                  className="inline-block bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  Kembali ke {bookInfo.name}
-                </Link>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -135,129 +129,88 @@ export default function HadisDetailPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center gap-4 mb-6">
-            <Link
-              href={`/hadis/${bookId}`}
-              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">{hadis.data.name}</h1>
-              <p className="opacity-90">
-                Hadis No. {hadis.data.contents.number}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCopyText}
-                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                title="Salin Teks"
-              >
-                {copied ? (
-                  <Check className="w-5 h-5" />
-                ) : (
-                  <Copy className="w-5 h-5" />
-                )}
-              </button>
-              <button
-                onClick={handleShare}
-                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                title="Bagikan"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="bg-[#03533d] text-white sticky top-0 z-10 shadow-md rounded-lg">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/hadis/${bookId}?page=${Math.ceil(hadisNumber / 10)}`}
+                  className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                  title={`Kembali ke daftar ${bookInfo?.name}`}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Link>
+                <div>
+                  <h1 className="text-xl font-bold">{hadis.data.name}</h1>
+                  <p className="text-sm opacity-90">
+                    Hadis No. {hadis.data.contents.number}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-xl shadow-md p-8">
-          {/* Hadis Header */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-orange-100 rounded-full">
-              <BookOpen className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {hadis.data.name} - Hadis No. {hadis.data.contents.number}
-              </h2>
-              <p className="text-gray-600">
-                {bookInfo &&
-                  `${bookInfo.available.toLocaleString()} hadis tersedia dalam kitab ini`}
-              </p>
-            </div>
-          </div>
-
+        {/* Main Content */}
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
           {/* Arabic Text */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">
               Teks Arab
-            </h3>
-            <div className="p-6 bg-gray-50 rounded-lg border-r-4 border-orange-400">
-              <p className="text-right text-2xl leading-relaxed text-gray-800 font-arabic">
+            </h2>
+            <div className="bg-gray-50 p-6 rounded-lg border-r-4 border-emerald-600">
+              <p
+                className="text-right text-3xl leading-loose font-naskh text-gray-900"
+                dir="rtl"
+              >
                 {hadis.data.contents.arab}
               </p>
             </div>
           </div>
 
           {/* Indonesian Translation */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Terjemahan Indonesia
-            </h3>
-            <div className="p-6 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">
+              Terjemahan
+            </h2>
+            <div className="bg-emerald-50 p-6 rounded-lg border-l-4 border-emerald-600">
               <p className="text-gray-800 leading-relaxed text-lg">
                 {hadis.data.contents.id}
               </p>
             </div>
           </div>
+        </div>
 
-          {/* Navigation */}
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-            <div className="flex items-center gap-4">
-              {hadisNumber > 1 && (
-                <Link
-                  href={`/hadis/${bookId}/${hadisNumber - 1}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Hadis Sebelumnya
-                </Link>
-              )}
-            </div>
-
-            <div className="flex items-center gap-4">
-              {bookInfo && hadisNumber < bookInfo.available && (
-                <Link
-                  href={`/hadis/${bookId}/${hadisNumber + 1}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-                >
-                  Hadis Selanjutnya
-                  <ArrowLeft className="w-4 h-4 rotate-180" />
-                </Link>
-              )}
-            </div>
+        {/* Navigation */}
+        <div className="mt-8 flex items-center justify-between">
+          <div>
+            {hadisNumber > 1 && (
+              <Link
+                href={`/hadis/${bookId}/${hadisNumber - 1}`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 transition-colors shadow-sm border border-gray-200"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Sebelumnya
+              </Link>
+            )}
           </div>
 
-          {/* Back to List */}
-          <div className="text-center mt-8">
-            <Link
-              href={`/hadis/${bookId}`}
-              className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium transition-colors"
-            >
-              <BookOpen className="w-4 h-4" />
-              Kembali ke Daftar {hadis.data.name}
-            </Link>
+          <div>
+            {bookInfo && hadisNumber < bookInfo.available && (
+              <Link
+                href={`/hadis/${bookId}/${hadisNumber + 1}`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+              >
+                Selanjutnya
+                <ArrowLeft className="w-4 h-4 rotate-180" />
+              </Link>
+            )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
