@@ -64,7 +64,7 @@ export default function DailyAyat() {
           One Day One Ayat
         </h2>
       </div>
-      <div className="flex flex-col items-center justify-center pt-3 mb-3 border-gray-200 text-sm text-gray-600 gap-1">
+      <div className="flex flex-col items-center justify-center pt-3 mb-3 border-gray-200 text-sm text-gray-600 gap-1 font-medium">
         <span className="text-center">
           QS. {dailyAyat.surat.namaLatin} ({dailyAyat.surat.nomor}):
           {dailyAyat.ayat.nomorAyat}
@@ -74,8 +74,8 @@ export default function DailyAyat() {
 
       {/* Arabic */}
 
-      <div className="mb-4 text-center bg-gray-50">
-        <p className="text-lg font-arabic leading-loose text-gray-900 mb-1">
+      <div className="p-4 bg-gray-50 rounded-lg">
+        <p className="text-center text-lg leading-relaxed text-gray-800 font-arabic">
           {dailyAyat.ayat.teksArab}
         </p>
         <p className="text-sm text-gray-500 italic text-center">

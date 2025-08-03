@@ -98,8 +98,8 @@ export default function SuratPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen p-4 md:p-8">
+        <div className="max-w-6xl mx-auto">
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
@@ -110,8 +110,8 @@ export default function SuratPage() {
 
   if (error || !surat) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen p-4 md:p-8">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center py-12">
             <p className="text-red-500 mb-4">
               {error || "Surat tidak ditemukan"}
@@ -130,8 +130,8 @@ export default function SuratPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
@@ -189,12 +189,6 @@ export default function SuratPage() {
               </div>
               <span>{surat.jumlahAyat} ayat</span>
               <span>Surat ke-{surat.nomor}</span>
-            </div>
-
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {surat.deskripsi}
-              </p>
             </div>
           </div>
         </div>

@@ -141,8 +141,8 @@ export default function QuranPage() {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 py-8 px-4 md:px-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="py-8 px-4 md:px-8">
+        <div className="max-w-6xl mx-auto">
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
@@ -152,26 +152,26 @@ export default function QuranPage() {
   }
 
   return (
-    <div className="bg-gray-50 py-8 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-emerald-100 rounded-lg">
-              <BookOpen className="w-6 h-6 text-emerald-600" />
+        <div className="bg-[#03533d] rounded-xl overflow-hidden border-b-6 border-gray-900 p-6 flex flex-col space-y-3">
+          <div className="flex items-center mb-2">
+            <div className="p-3 rounded-lg mr-3">
+              <BookOpen className="w-12 h-12 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <h1 className="text-2xl font-bold text-white text-left">
                 Al-Qur&apos;an
               </h1>
-              <p className="text-gray-600">
+              <p className="text-emerald-100 text-left">
                 Bacalah Al-Qur&apos;an dengan khusyuk
               </p>
             </div>
           </div>
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative w-full max-w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
@@ -206,11 +206,11 @@ export default function QuranPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {currentSurat.map((surat) => (
             <Link key={surat.nomor} href={`/quran/${surat.nomor}`}>
-              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 p-4 border-l-4 border-emerald-500 hover:-translate-y-1">
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 p-4 border-l-4 border-gray-900 hover:-translate-y-1">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                      <span className="text-emerald-600 font-semibold text-sm">
+                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                      <span className="text-gray-900 font-semibold text-sm">
                         {surat.nomor}
                       </span>
                     </div>
@@ -218,7 +218,7 @@ export default function QuranPage() {
                       <h3 className="font-semibold text-gray-800 text-lg">
                         {surat.namaLatin}
                       </h3>
-                      <p className="text-emerald-600 text-sm font-medium">
+                      <p className="text-gray-600 text-sm font-medium">
                         {surat.arti}
                       </p>
                     </div>
