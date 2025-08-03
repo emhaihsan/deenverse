@@ -1,23 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Heart,
-  Calculator,
-  Wallet,
-  Info,
-  Users,
-} from "lucide-react";
+import { Calculator, Wallet, Users, Heart } from "lucide-react";
 import { useAccount } from "wagmi";
-import Image from "next/image";
 import {
   convertIdrToEth,
   formatEth,
   getEthereumPrice,
 } from "@/lib/api/cryptoPrice";
 import organizations from "@/data/destinationOrg";
+import FitrahHeader from "@/components/penyaluran/zakat/fitrah/FitrahHeader";
+import FitrahInfo from "@/components/penyaluran/zakat/fitrah/FitrahInfo";
+import OrganizationSelection from "@/components/penyaluran/OrganizationSelection";
 
 export default function ZakatFitrahPage() {
   const [advancedInputs, setAdvancedInputs] = useState({
@@ -106,112 +100,26 @@ export default function ZakatFitrahPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Back Navigation */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/penyaluran/zakat"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Kembali ke Kategori Zakat</span>
-          </Link>
-        </div>
+    <div className="min-h-screen py-8 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <FitrahHeader />
 
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="p-3 bg-rose-50 rounded-2xl border border-rose-200">
-              <Heart className="w-8 h-8 text-rose-600" />
-            </div>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-            Zakat Fitrah
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-            2,5 kg beras/orang • Tidak ada nisab • Wajib setiap Ramadan
-          </p>
-        </div>
-
-        {/* Nisab Information */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-start gap-4">
-            <Info className="w-6 h-6 text-rose-600 mt-1 flex-shrink-0" />
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-3">
-                Tentang Zakat Fitrah
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                Zakat fitrah adalah zakat yang wajib dikeluarkan setiap muslim
-                menjelang akhir bulan Ramadan, sebelum shalat Idul Fitri.
-                Besarnya zakat fitrah adalah 2,5 kg beras atau makanan pokok
-                setara per jiwa.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    Syarat Wajib:
-                  </h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                    <li>Muslim</li>
-                    <li>Merdeka (bukan budak)</li>
-                    <li>Mampu (punya harta melebihi kebutuhan pokok)</li>
-                    <li>Berada di tempat yang berbeda waktu (musafir)</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    Waktu Pembayaran:
-                  </h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                    <li>Mulai dari awal Ramadan</li>
-                    <li>Sebelum shalat Idul Fitri</li>
-                    <li>Lebih utama malam takbiran</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Organization Selection */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Heart className="w-6 h-6 text-rose-600" />
-            <h2 className="text-xl font-medium text-gray-900">
-              Pilih Lembaga Penyalur
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {organizations.map((org) => (
-              <div
-                key={org.id}
-                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedOrg === org.id
-                    ? "border-rose-500 bg-rose-50"
-                    : "border-gray-200 hover:border-rose-300"
-                }`}
-                onClick={() => setSelectedOrg(org.id)}
-              >
-                <div className="relative h-16 mb-2">
-                  <Image
-                    src={org.logo}
-                    alt={org.name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                <p className="text-center font-medium mt-2">{org.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Zakat Calculator */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <OrganizationSelection
+          organizations={organizations}
+          selectedOrg={selectedOrg}
+          onSelectOrg={setSelectedOrg}
+          theme={{
+            icon: <Heart className="w-6 h-6 text-[#03533d]" />,
+            title: "Pilih Lembaga Penyalur",
+            selectedClass:
+              "border-[#03533d] bg-emerald-50 ring-2 ring-[#03533d]",
+            hoverClass: "hover:border-[#03533d]",
+          }}
+        />
+        {/* Calculator */}
+        <div className="bg-white rounded-2xl border border-b-4 border-gray-900 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <Calculator className="w-6 h-6 text-rose-600" />
+            <Calculator className="w-6 h-6 text-[#03533d]" />
             <h2 className="text-xl font-medium text-gray-900">
               Kalkulator Zakat Fitrah
             </h2>
@@ -263,7 +171,7 @@ export default function ZakatFitrahPage() {
                     }
                     className={`py-3 px-2 rounded-lg border-2 transition-colors ${
                       advancedInputs.jenisZakat === item.id
-                        ? "border-rose-500 bg-rose-50 text-rose-700"
+                        ? "border-[#03533d] bg-emerald-50 text-[#03533d]"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
@@ -366,24 +274,24 @@ export default function ZakatFitrahPage() {
           </div>
 
           {/* Zakat Calculation Result */}
-          <div className="mt-6 p-4 bg-rose-50 rounded-lg border border-rose-200">
-            <div className="flex justify-between items-center">
+          <div className="mt-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+            <div className="flex justify-between items-center mb-2">
               <span className="text-gray-700 font-medium">
                 Zakat fitrah yang harus dibayar:
               </span>
-              <span className="text-xl font-bold text-rose-800">
+              <span className="text-xl font-bold text-emerald-800">
                 {formatCurrency(currentZakat)}
               </span>
             </div>
             {/* ETH Conversion */}
             {currentZakat > 0 && (
-              <div className="flex justify-between items-center pt-2 border-t border-rose-200 mt-2">
+              <div className="flex justify-between items-center pt-2 border-t border-emerald-200 mt-2">
                 <span className="text-gray-700">Jumlah dalam ETH:</span>
                 <div className="flex items-center">
                   {isLoadingEth ? (
-                    <div className="h-4 w-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="h-4 w-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mr-2" />
                   ) : (
-                    <span className="font-medium text-purple-600">
+                    <span className="font-medium text-emerald-700">
                       {ethAmount} ETH
                     </span>
                   )}
@@ -393,13 +301,13 @@ export default function ZakatFitrahPage() {
             {ethPrice > 0 && (
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Kurs:</span>
-                <span className="font-medium text-rose-700">
+                <span className="font-medium text-emerald-700">
                   1 ETH = {formatCurrency(ethPrice)}
                 </span>
               </div>
             )}
             {currentZakat === 0 && (
-              <p className="text-sm text-rose-700 mt-2">
+              <p className="text-sm text-emerald-700 mt-2">
                 Masukkan jumlah jiwa dalam keluarga untuk menghitung zakat
                 fitrah
               </p>
@@ -423,28 +331,13 @@ export default function ZakatFitrahPage() {
             </div>
           )}
 
-          {/* Important Notes */}
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="font-medium text-blue-800 mb-2">
-              📝 Catatan Penting
-            </h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Zakat fitrah wajib dibayar sebelum shalat Idul Fitri</li>
-              <li>
-                • Boleh dibayar sejak awal Ramadan hingga sebelum shalat Id
-              </li>
-              <li>• Wajib untuk setiap jiwa, termasuk bayi yang baru lahir</li>
-              <li>• Lebih utama dibayar dalam bentuk makanan pokok</li>
-            </ul>
-          </div>
-
           {/* Payment Button */}
           <div className="mt-6">
             <button
               disabled={!isConnected || currentZakat === 0 || !selectedOrg}
               className={`w-full py-4 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
                 isConnected && currentZakat > 0 && selectedOrg
-                  ? "bg-rose-600 hover:bg-rose-700 text-white shadow-lg hover:shadow-xl"
+                  ? "bg-[#03533d] hover:bg-gray-900 text-white border border-b-4 border-gray-900"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
             >
@@ -468,6 +361,7 @@ export default function ZakatFitrahPage() {
             )}
           </div>
         </div>
+        <FitrahInfo />
       </div>
     </div>
   );

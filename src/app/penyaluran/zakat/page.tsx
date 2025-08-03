@@ -6,7 +6,7 @@ import nisabCategories from "@/data/nishabCategories";
 
 export default function ZakatPenyaluranPage() {
   return (
-    <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
+    <div className="min-h-screen py-8 px-4 md:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Back Navigation */}
         <div className="flex items-center gap-4">
