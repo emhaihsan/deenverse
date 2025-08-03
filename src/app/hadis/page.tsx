@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Scroll, BookOpen, ArrowRight, Search, Loader2 } from "lucide-react";
+import { BookOpen, ArrowRight, Search, Loader2 } from "lucide-react";
 import { getHadisBooks, getSpecificHadis } from "@/lib/api/hadis";
 import { HadisBook } from "@/types/hadis";
 

@@ -16,7 +16,6 @@ export default function HadisDetailPage() {
   const [bookInfo, setBookInfo] = useState<HadisBook | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -50,43 +49,6 @@ export default function HadisDetailPage() {
       fetchData();
     }
   }, [bookId, hadisNumber]);
-
-  const handleCopyText = async () => {
-    if (!hadis) return;
-
-    const textToCopy = `${hadis.data.contents.arab}\n\n${hadis.data.contents.id}\n\n- ${hadis.data.name} No. ${hadis.data.contents.number}`;
-
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy text:", err);
-    }
-  };
-
-  const handleShare = async () => {
-    if (!hadis) return;
-
-    const shareData = {
-      title: `${hadis.data.name} No. ${hadis.data.contents.number}`,
-      text: hadis.data.contents.id,
-      url: window.location.href,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback to copying URL
-        await navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      }
-    } catch (err) {
-      console.error("Failed to share:", err);
-    }
-  };
 
   if (loading) {
     return (
